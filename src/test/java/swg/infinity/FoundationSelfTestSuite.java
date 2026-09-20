@@ -9,6 +9,8 @@ import swg.infinity.engine.InfinityCraftServiceSelfTest;
 import swg.infinity.engine.ResourceLaboratorySelfTest;
 import swg.infinity.integration.SchematicBindingRegistrySelfTest;
 import swg.infinity.planning.MaterialPlannerSelfTest;
+import swg.infinity.rules.RulesetCatalogSelfTest;
+import swg.infinity.rules.RulesetIntegritySelfTest;
 
 /**
  * Dependency-free foundation suite for repositories that have not yet admitted
@@ -28,6 +30,8 @@ public final class FoundationSelfTestSuite {
         CraftComparatorSelfTest.main(args);
         CraftExplainerSelfTest.main(args);
         MaterialPlannerSelfTest.main(args);
+        RulesetIntegritySelfTest.main(args);
+        RulesetCatalogSelfTest.main(args);
         System.out.println("FoundationSelfTestSuite PASS");
     }
 }
