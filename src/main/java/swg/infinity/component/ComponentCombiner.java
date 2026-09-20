@@ -113,6 +113,11 @@ public final class ComponentCombiner {
             ComponentInstance prototype =
                     assignment.getComponentUses().get(0).getComponent();
 
+            // CustomIngredient participates in SharedLabratory weighting but is
+            // not processed by ResourceLabratory::applyComponentStats as a
+            // normal Component.
+            if (prototype.isCustomResourceIngredient()) continue;
+
             for (ComponentProperty componentProperty : prototype.getProperties()) {
                 modified = true;
                 AttributeState current =
@@ -180,7 +185,6 @@ public final class ComponentCombiner {
                     attributes.put(
                             componentProperty.getAttribute(),
                             current.withCurrentValue(limited));
-                    // Mirrors ResourceLabratory::applyComponentStats local flag.
                     modified = false;
                     break;
                 case RESOURCE:
@@ -202,11 +206,6 @@ public final class ComponentCombiner {
         return state.withCalculationData(attributes, warnings);
     }
 
-    /**
-     * Infinity only begins serial comparison after the slot already contains a
-     * component. Therefore one component use-object (including a multi-use item
-     * that fills the slot) does not require a non-empty serial.
-     */
     private void validateIdentity(
             IngredientSlotDefinition slot,
             ComponentSlotAssignment assignment) {

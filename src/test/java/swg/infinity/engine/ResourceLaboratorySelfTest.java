@@ -1,6 +1,5 @@
 package swg.infinity.engine;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -8,6 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import swg.infinity.component.ComponentInstance;
+import swg.infinity.component.ComponentOrigin;
+import swg.infinity.component.ComponentSlotAssignment;
+import swg.infinity.component.ComponentUse;
 import swg.infinity.contracts.CombineType;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;
@@ -18,13 +21,7 @@ import swg.infinity.contracts.ResourceStat;
 import swg.infinity.contracts.SchematicDefinition;
 import swg.infinity.contracts.SlotKind;
 
-/**
- * Dependency-free source-derived deterministic smoke tests.
- *
- * <p>This is intentionally a main-based harness because the fork has no
- * committed unit-test dependency. Codex should execute it after mvn
- * test-compile and may later migrate it to the admitted test framework.</p>
- */
+/** Dependency-free source-derived deterministic Resource Laboratory tests. */
 public final class ResourceLaboratorySelfTest {
 
     private ResourceLaboratorySelfTest() {
@@ -32,6 +29,7 @@ public final class ResourceLaboratorySelfTest {
 
     public static void main(String[] args) {
         shouldQuantityWeightOnlyNonZeroContributors();
+        shouldIncludeCustomIngredientPrototypeInWeighting();
         shouldCalculateUtOnlyMaterialCeiling();
         shouldInterpolateReversedRange();
         shouldClampExperimentationToMaterialCeiling();
@@ -42,7 +40,8 @@ public final class ResourceLaboratorySelfTest {
     private static void shouldQuantityWeightOnlyNonZeroContributors() {
         SchematicDefinition schematic = schematic(
                 property("damage", "expDamage", 1.0, 20.0,
-                        Arrays.asList(new PropertyWeight(ResourceStat.UT, 1, 1.0))),
+                        Collections.singletonList(
+                                new PropertyWeight(ResourceStat.UT, 1, 1.0))),
                 Arrays.asList(
                         slot(0, "steel", 10),
                         slot(1, "metal", 30)));
@@ -50,8 +49,7 @@ public final class ResourceLaboratorySelfTest {
         ResourceInput hasUt = resource("A", "steel", 1000, 1000);
         ResourceInput zeroUt = resource("B", "metal", 0, 1000);
 
-        ResourceLaboratory lab = new ResourceLaboratory();
-        double result = lab.calculateWeightedValue(
+        double result = new ResourceLaboratory().calculateWeightedValue(
                 schematic,
                 Arrays.asList(
                         new ResourceSlotAssignment(0, hasUt),
@@ -61,10 +59,50 @@ public final class ResourceLaboratorySelfTest {
         assertClose(1000.0, result, 0.000001, "non-zero contributor denominator");
     }
 
+    private static void shouldIncludeCustomIngredientPrototypeInWeighting() {
+        IngredientSlotDefinition resourceSlot = slot(0, "steel", 10);
+        IngredientSlotDefinition customSlot = new IngredientSlotDefinition(
+                1, "Quest ingredient", SlotKind.OPTIONAL_MIXED_COMPONENT,
+                "custom_ingredient", 30, 1.0d, source());
+
+        SchematicDefinition schematic = schematic(
+                property("damage", "expDamage", 1.0, 20.0,
+                        Collections.singletonList(
+                                new PropertyWeight(ResourceStat.UT, 1, 1.0))),
+                Arrays.asList(resourceSlot, customSlot));
+
+        Map<ResourceStat, Integer> customStats =
+                new EnumMap<ResourceStat, Integer>(ResourceStat.class);
+        customStats.put(ResourceStat.UT, Integer.valueOf(500));
+        ComponentInstance custom = new ComponentInstance(
+                "quest-item",
+                "object/tangible/misc/custom_ingredient.iff",
+                "",
+                1,
+                ComponentOrigin.MANUAL,
+                Collections.emptyList(),
+                customStats);
+
+        double result = new ResourceLaboratory().calculateWeightedValue(
+                schematic,
+                Collections.singletonList(
+                        new ResourceSlotAssignment(
+                                0, resource("Steel1000", "steel", 1000, 1000))),
+                Collections.singletonList(
+                        new ComponentSlotAssignment(
+                                1,
+                                Collections.singletonList(
+                                        new ComponentUse(custom, 1)))),
+                ResourceStat.UT);
+
+        assertClose(625.0d, result, 0.000001d, "custom ingredient weighting");
+    }
+
     private static void shouldCalculateUtOnlyMaterialCeiling() {
         SchematicDefinition schematic = schematic(
                 property("maxdamage", "expDamage", 1.0, 20.0,
-                        Arrays.asList(new PropertyWeight(ResourceStat.UT, 1, 1.0))),
+                        Collections.singletonList(
+                                new PropertyWeight(ResourceStat.UT, 1, 1.0))),
                 Arrays.asList(
                         slot(0, "steel", 10),
                         slot(1, "metal", 7)));
@@ -95,7 +133,8 @@ public final class ResourceLaboratorySelfTest {
                 "expSpeed",
                 7.0,
                 4.0,
-                Arrays.asList(new PropertyWeight(ResourceStat.UT, 1, 1.0)));
+                Collections.singletonList(
+                        new PropertyWeight(ResourceStat.UT, 1, 1.0)));
 
         assertClose(
                 4.3,
@@ -107,7 +146,8 @@ public final class ResourceLaboratorySelfTest {
     private static void shouldClampExperimentationToMaterialCeiling() {
         SchematicDefinition schematic = schematic(
                 property("maxdamage", "expDamage", 1.0, 20.0,
-                        Arrays.asList(new PropertyWeight(ResourceStat.UT, 1, 1.0))),
+                        Collections.singletonList(
+                                new PropertyWeight(ResourceStat.UT, 1, 1.0))),
                 Collections.singletonList(slot(0, "steel", 10)));
 
         ResourceInput steel = resource("Steel900", "steel", 900, 1000);
@@ -129,7 +169,8 @@ public final class ResourceLaboratorySelfTest {
     private static void shouldRejectIllegalResourceClass() {
         SchematicDefinition schematic = schematic(
                 property("damage", "expDamage", 1.0, 20.0,
-                        Arrays.asList(new PropertyWeight(ResourceStat.UT, 1, 1.0))),
+                        Collections.singletonList(
+                                new PropertyWeight(ResourceStat.UT, 1, 1.0))),
                 Collections.singletonList(slot(0, "steel", 10)));
 
         boolean rejected = false;
@@ -151,7 +192,6 @@ public final class ResourceLaboratorySelfTest {
     private static SchematicDefinition schematic(
             ExperimentalProperty property,
             List<IngredientSlotDefinition> slots) {
-        Provenance source = source();
         return new SchematicDefinition(
                 "fixture",
                 "Fixture",
@@ -163,7 +203,7 @@ public final class ResourceLaboratorySelfTest {
                 slots,
                 Collections.singletonList(property),
                 "generic",
-                source);
+                source());
     }
 
     private static IngredientSlotDefinition slot(

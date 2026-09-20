@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import swg.infinity.component.ComponentInstance;
+import swg.infinity.component.ComponentSlotAssignment;
 import swg.infinity.contracts.EvidenceState;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;
@@ -28,11 +30,28 @@ public final class ResourceLaboratory {
             SchematicDefinition schematic,
             List<ResourceSlotAssignment> assignments,
             CraftOutcomeTier assemblyTier) {
+        return initialize(
+                schematic,
+                assignments,
+                new ArrayList<ComponentSlotAssignment>(),
+                assemblyTier);
+    }
+
+    public CraftState initialize(
+            SchematicDefinition schematic,
+            List<ResourceSlotAssignment> assignments,
+            List<ComponentSlotAssignment> componentAssignments,
+            CraftOutcomeTier assemblyTier) {
         requireResourceLaboratory(schematic);
         if (assignments == null) throw new NullPointerException("assignments");
+        if (componentAssignments == null) {
+            throw new NullPointerException("componentAssignments");
+        }
         if (assemblyTier == null) throw new NullPointerException("assemblyTier");
 
         Map<Integer, ResourceInput> resources = indexAssignments(schematic, assignments);
+        Map<Integer, ComponentSlotAssignment> components =
+                indexComponentAssignments(componentAssignments);
         validateRequiredResourceSlots(schematic, resources);
 
         Map<String, AttributeState> attributes =
@@ -41,7 +60,7 @@ public final class ResourceLaboratory {
 
         for (ExperimentalProperty property : schematic.getProperties()) {
             double weightedScore = calculatePropertyScore(
-                    schematic, resources, property);
+                    schematic, resources, components, property);
             double maxPercentage = weightedScore > 0.0d
                     ? weightedScore / 1000.0d
                     : 0.0d;
@@ -107,16 +126,31 @@ public final class ResourceLaboratory {
             SchematicDefinition schematic,
             List<ResourceSlotAssignment> assignments,
             ResourceStat stat) {
+        return calculateWeightedValue(
+                schematic, assignments,
+                new ArrayList<ComponentSlotAssignment>(), stat);
+    }
+
+    public double calculateWeightedValue(
+            SchematicDefinition schematic,
+            List<ResourceSlotAssignment> assignments,
+            List<ComponentSlotAssignment> componentAssignments,
+            ResourceStat stat) {
         if (schematic == null) throw new NullPointerException("schematic");
         if (assignments == null) throw new NullPointerException("assignments");
+        if (componentAssignments == null) {
+            throw new NullPointerException("componentAssignments");
+        }
         if (stat == null) throw new NullPointerException("stat");
         if (stat == ResourceStat.BK) {
             throw new UnsupportedInfinityRuleException(
                     "BK is source-recognized but generic value resolution is unresolved");
         }
         Map<Integer, ResourceInput> resources = indexAssignments(schematic, assignments);
+        Map<Integer, ComponentSlotAssignment> components =
+                indexComponentAssignments(componentAssignments);
         validateRequiredResourceSlots(schematic, resources);
-        return calculateWeightedValue(schematic, resources, stat);
+        return calculateWeightedValue(schematic, resources, components, stat);
     }
 
     public static double assemblyPercentage(double weightedScore) {
@@ -158,6 +192,7 @@ public final class ResourceLaboratory {
     private double calculatePropertyScore(
             SchematicDefinition schematic,
             Map<Integer, ResourceInput> resources,
+            Map<Integer, ComponentSlotAssignment> components,
             ExperimentalProperty property) {
         double weightedScore = 0.0d;
         for (PropertyWeight weight : property.getWeights()) {
@@ -166,7 +201,7 @@ public final class ResourceLaboratory {
                         "BK cannot be treated as exact in generic Resource Laboratory");
             }
             weightedScore += calculateWeightedValue(
-                    schematic, resources, weight.getStat())
+                    schematic, resources, components, weight.getStat())
                     * weight.getNormalizedWeight();
         }
         return weightedScore;
@@ -175,26 +210,64 @@ public final class ResourceLaboratory {
     private double calculateWeightedValue(
             SchematicDefinition schematic,
             Map<Integer, ResourceInput> resources,
+            Map<Integer, ComponentSlotAssignment> components,
             ResourceStat stat) {
         long quantitySum = 0L;
         double weightedTotal = 0.0d;
 
         for (IngredientSlotDefinition slot : schematic.getSlots()) {
-            if (slot.getKind() != SlotKind.RESOURCE) continue;
+            if (slot.getKind() == SlotKind.RESOURCE) {
+                ResourceInput resource =
+                        resources.get(Integer.valueOf(slot.getIndex()));
+                if (resource == null) continue;
 
-            ResourceInput resource = resources.get(Integer.valueOf(slot.getIndex()));
-            if (resource == null) continue;
+                int value = resource.getStat(stat);
+                if (value != 0) {
+                    quantitySum += slot.getQuantity();
+                    weightedTotal +=
+                            (double) value * (double) slot.getQuantity();
+                }
+                continue;
+            }
 
-            int value = resource.getStat(stat);
+            ComponentSlotAssignment assignment =
+                    components.get(Integer.valueOf(slot.getIndex()));
+            if (assignment == null || assignment.getComponentUses().isEmpty()) {
+                continue;
+            }
+
+            // Mirrors ComponentSlot::getPrototype(): only contents[0].
+            ComponentInstance prototype =
+                    assignment.getComponentUses().get(0).getComponent();
+            if (!prototype.isCustomResourceIngredient()) continue;
+
+            int value = prototype.getResourceStat(stat);
             if (value != 0) {
+                // Infinity uses the draft-slot quantity, not inserted uses.
                 quantitySum += slot.getQuantity();
-                weightedTotal += (double) value * (double) slot.getQuantity();
+                weightedTotal +=
+                        (double) value * (double) slot.getQuantity();
             }
         }
 
         return weightedTotal == 0.0d
                 ? 0.0d
                 : weightedTotal / (double) quantitySum;
+    }
+
+    private Map<Integer, ComponentSlotAssignment> indexComponentAssignments(
+            List<ComponentSlotAssignment> assignments) {
+        Map<Integer, ComponentSlotAssignment> indexed =
+                new HashMap<Integer, ComponentSlotAssignment>();
+        for (ComponentSlotAssignment assignment : assignments) {
+            if (assignment == null) throw new NullPointerException("component assignment");
+            Integer index = Integer.valueOf(assignment.getSlotIndex());
+            if (indexed.put(index, assignment) != null) {
+                throw new IllegalArgumentException(
+                        "Duplicate component assignment for slot " + index);
+            }
+        }
+        return indexed;
     }
 
     private Map<Integer, ResourceInput> indexAssignments(

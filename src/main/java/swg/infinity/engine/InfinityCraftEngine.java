@@ -8,9 +8,9 @@ import swg.infinity.processor.ResultProcessor;
 /**
  * Deterministic orchestration boundary for one Infinity craft scenario.
  *
- * <p>Order mirrors the source path relevant to generic Resource Laboratory:
- * initialize resource-derived values and assembly, apply component stats, then
- * apply experimentation actions, then project into the final object processor.</p>
+ * <p>Order mirrors the generic Resource Laboratory source path: resource and
+ * custom-ingredient weighted initialization/assembly, component stat
+ * application, experimentation, then final object processing.</p>
  */
 public final class InfinityCraftEngine {
     private final ResourceLaboratory resourceLaboratory;
@@ -39,6 +39,7 @@ public final class InfinityCraftEngine {
         CraftState state = resourceLaboratory.initialize(
                 scenario.getSchematic(),
                 scenario.getResources(),
+                scenario.getComponents(),
                 scenario.getAssemblyOutcome());
 
         state = componentCombiner.apply(state, scenario.getComponents());
