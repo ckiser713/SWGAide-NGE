@@ -1,6 +1,23 @@
 # Infinity Foundation CI
 
-The foundation PR introduces a narrowly scoped GitHub Actions workflow so build evidence does not depend on narrative claims.
+## Current status
+
+**CI_INFRASTRUCTURE_BLOCKED / BUILD_UNKNOWN**
+
+A SHA-pinned Java 8 workflow was authored and GitHub created two runs for candidate
+`578a62634598e1a7621733b11a3d9a946f4c0131`:
+
+- push run: `35544275090`
+- pull-request run: `35544275575`
+
+Both runs concluded `failure`, but both jobs failed before GitHub recorded any
+workflow step. The connector returned no step data, and the generated log blob was
+already unavailable when requested. Therefore these failures are **not evidence of
+a Java/Maven compile failure**.
+
+Automatic triggers are disabled at the current checkpoint to avoid repeatedly
+creating non-diagnostic failed checks. The workflow remains available for manual
+execution after Codex/operator diagnosis.
 
 ## Supply-chain controls
 
@@ -20,7 +37,7 @@ permissions:
 
 Checkout disables persisted GitHub credentials.
 
-## Jobs
+## Intended jobs
 
 ### Baseline compile
 
@@ -34,24 +51,27 @@ and runs:
 mvn -B -Dstyle.color=never test-compile
 ```
 
-This distinguishes inherited build failures from feature-branch regressions.
-
 ### Foundation compile and self-test
 
-Checks out the candidate PR SHA, records environment/current SHA, compiles, and runs:
+Checks out the selected candidate SHA, compiles, and runs:
 
 ```text
 java -ea -cp target/test-classes:target/classes swg.infinity.FoundationSelfTestSuite
 ```
 
+## Codex priority
+
+Use terminal evidence first:
+
+1. build audited baseline;
+2. build PR head;
+3. run `FoundationSelfTestSuite`;
+4. only after source results are known, diagnose GitHub Actions policy/runner setup.
+
+Do not modify source code merely to make the CI badge green.
+
 ## Evidence rule
 
-A green workflow is evidence for compilation/self-test only at the exact candidate SHA that ran. It is not evidence of:
-
-- real Infinity golden-fixture parity;
-- GUI runtime behavior;
-- RNG parity;
-- unsupported processors;
-- source extractor completeness.
-
-Those remain separately gated.
+A future green workflow is evidence only for the exact candidate SHA that ran.
+It is not evidence of real Infinity golden-fixture parity, GUI behavior, RNG
+parity, unsupported processors, or extractor completeness.

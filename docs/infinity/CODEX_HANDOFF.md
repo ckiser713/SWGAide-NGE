@@ -1,49 +1,186 @@
 # Codex Continuation Handoff
 
-## Objective
+## Controlling objective
 
-Continue the SWG Infinity Crafting Laboratory foundation on branch
-`feature/infinity-crafting-lab-foundation`.
+Continue SWG Infinity Crafting Laboratory development on the existing draft PR
+without weakening the evidence/authority model.
 
-## First actions
+Repository:
 
-1. Resolve exact current branch HEAD and changed-file list.
-2. Build the fork baseline if a clean baseline checkout is available.
-3. Build this feature branch with the same JDK/Maven environment.
-4. Do not repair compile failures by weakening contracts or touching unrelated legacy code.
-5. Run the pure-Java foundation test harnesses.
-6. Record exact commands and outputs.
+`ckiser713/SWGAide-NGE`
 
-## Constraints
+Pull request:
 
-- Preserve Java 8 compatibility.
-- No SWGAide.DAT schema changes without operator approval.
-- No Java-version upgrade without operator approval.
-- No new dependencies without operator approval.
-- Do not modify legacy Test Bench calculations.
-- No direct copying of Infinity AGPL implementation code.
-- Infinity source SHA `6b6ac372...` is the initial crafting authority.
-- UNKNOWN remains UNKNOWN.
+`#1 — feat: add SWG Infinity crafting laboratory foundation`
 
-## Next implementation target
+Branch:
 
-After the foundation compiles:
+`feature/infinity-crafting-lab-foundation`
 
-1. complete deterministic Resource Laboratory fixtures;
-2. component combine semantics;
-3. first complete weapon chain;
-4. only then wire a minimal Infinity Lab Swing entry point.
+Base:
 
-## Required report
+`master@7f520ee508221cce3ac3e8871919e74de9fcb0c2`
 
-Return:
+SWG Infinity authority:
 
-- branch
-- exact head SHA
-- files changed
-- build commands/results
-- tests/results
-- evidence/fixture locations
-- unresolved risks
-- rollback
-- smallest next action
+`swginfinity/public@6b6ac3726aaa3c293fca83911850d3a02e2adb4f`
+
+**Resolve the current PR head with Git before doing any work. Do not trust a
+copied SHA in prose if the branch has moved.**
+
+## First terminal actions
+
+Run and preserve exact output:
+
+```text
+git status --short
+git branch --show-current
+git rev-parse HEAD
+java -version
+mvn -version
+```
+
+### Baseline evidence
+
+Use a separate clean worktree or checkout to test:
+
+`7f520ee508221cce3ac3e8871919e74de9fcb0c2`
+
+Run:
+
+```text
+mvn -B -Dstyle.color=never test-compile
+```
+
+Record the result before attributing any build issue to the feature branch.
+
+### Candidate evidence
+
+On the exact PR head:
+
+```text
+mvn -B -Dstyle.color=never test-compile
+```
+
+If compilation succeeds:
+
+Unix-like:
+
+```text
+java -ea -cp target/test-classes:target/classes swg.infinity.FoundationSelfTestSuite
+```
+
+Windows:
+
+```text
+java -ea -cp target/test-classes;target/classes swg.infinity.FoundationSelfTestSuite
+```
+
+Capture the full output.
+
+## CI receipt
+
+GitHub-created runs `35544275090` and `35544275575` for candidate
+`578a62634598e1a7621733b11a3d9a946f4c0131` both failed before any workflow
+step was recorded. Treat GitHub-hosted CI as INFRASTRUCTURE_BLOCKED, not as
+compile failure. Automatic triggers are disabled until diagnosed.
+
+## Do not do these while fixing build issues
+
+- do not weaken fail-closed validation;
+- do not remove source quirks because they look unintuitive;
+- do not change legacy `SWGTestBench`;
+- do not modify `SWGAide.DAT`;
+- do not change Java version;
+- do not add dependencies;
+- do not copy Infinity AGPL implementation source;
+- do not convert UNKNOWN into PASS.
+
+If one of those becomes necessary, stop and report the evidence.
+
+## Existing implementation areas
+
+Review these packages before extending:
+
+```text
+swg.infinity.contracts
+swg.infinity.engine
+swg.infinity.component
+swg.infinity.integration
+swg.infinity.processor
+swg.infinity.analysis
+swg.infinity.planning
+swg.infinity.rules
+swg.infinity.crafter
+swg.infinity.loot
+swg.infinity.extract
+```
+
+Key handoff documents:
+
+```text
+docs/infinity/SOURCE_OF_TRUTH.md
+docs/infinity/ARCHITECTURE.md
+docs/infinity/ACCEPTANCE_MATRIX.md
+docs/infinity/GOLDEN_FIXTURE_PLAN.md
+docs/infinity/TASK_GRAPH.yaml
+docs/infinity/UNKNOWN_REGISTER.md
+docs/infinity/CI.md
+docs/infinity/CHECKPOINT.md
+```
+
+Machine-readable contracts:
+
+```text
+docs/infinity/ruleset.schema.json
+docs/infinity/bindings.schema.json
+docs/infinity/scenario.schema.json
+```
+
+## Next implementation order after compile/self-tests
+
+### 1. Static/code review remediation
+
+Resolve compile failures narrowly. Add tests for every remediation.
+
+### 2. Real golden fixtures
+
+Implement the weapon corpus in `GOLDEN_FIXTURE_PLAN.md`. Synthetic smoke tests
+do not justify Exact support.
+
+### 3. Source extractor
+
+Build the sandboxed inheritance-resolving extractor only after normalized
+contracts are compile-verified. Regex-only Lua scraping is prohibited.
+
+### 4. Schematic bindings
+
+Generate VERIFIED/AMBIGUOUS/MISSING bindings for SWGAide server 154. Ambiguous
+bindings do not run as Exact.
+
+### 5. Complete weapon vertical
+
+Prove resource → crafted component → exact exotic component → final weapon.
+
+### 6. Additive Swing workbench
+
+Only after the engine/golden path is evidence-complete. Keep legacy Test Bench
+available and unchanged.
+
+## Required completion report
+
+For every Codex tranche return:
+
+- objective and scope;
+- current branch/head SHA;
+- changed files;
+- commits/SHAs;
+- commands executed;
+- tests/build results with output location;
+- golden fixtures/evidence;
+- coverage changes;
+- unresolved UNKNOWNs/blockers;
+- rollback;
+- smallest next action.
+
+A clean narrative is not acceptance evidence.

@@ -1,17 +1,11 @@
 name: Infinity Crafting Foundation
 
+# Automatic execution is intentionally disabled at this checkpoint.
+# The first GitHub-hosted runs failed before any job step was recorded
+# (runs 35544275090 and 35544275575). Treat this as CI infrastructure/policy
+# blocked, not as compilation evidence. Codex should first run the documented
+# local commands, then diagnose/reenable CI separately.
 on:
-  pull_request:
-    branches:
-      - master
-    paths:
-      - ".github/workflows/infinity-foundation.yml"
-      - "src/main/java/swg/infinity/**"
-      - "src/test/java/swg/infinity/**"
-      - "docs/infinity/**"
-  push:
-    branches:
-      - "feature/infinity-crafting-lab-foundation"
   workflow_dispatch:
 
 permissions:
