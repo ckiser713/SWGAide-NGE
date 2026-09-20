@@ -1,7 +1,6 @@
 package swg.infinity.component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -12,7 +11,6 @@ import swg.infinity.contracts.CombineType;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.PropertyWeight;
-import swg.infinity.contracts.SlotKind;
 import swg.infinity.engine.AttributeState;
 import swg.infinity.engine.CraftState;
 
@@ -168,7 +166,7 @@ public final class ComponentCombiner {
             attributes = recalculated;
         }
 
-        return state.replace(attributes, warnings);
+        return state.withCalculationData(attributes, warnings);
     }
 
     private void validateIdentity(

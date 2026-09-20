@@ -46,7 +46,13 @@ public final class CraftState {
         return new CraftState(schematic, evidenceState, replacement, warnings);
     }
 
-    CraftState replace(
+    /**
+     * Returns a new state with replacement calculation data.
+     *
+     * <p>Public so independent engine subpackages such as component processors
+     * can remain isolated without mutating this object.</p>
+     */
+    public CraftState withCalculationData(
             Map<String, AttributeState> replacement,
             List<String> replacementWarnings) {
         return new CraftState(
