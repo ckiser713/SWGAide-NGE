@@ -1,7 +1,6 @@
 package swg.infinity.engine;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,13 +54,12 @@ public final class ResourceLaboratory {
                     0.0d, Math.min(maxPercentage, currentPercentage));
 
             double currentValue = interpolate(property, currentPercentage);
-            AttributeState state = new AttributeState(
+            attributes.put(property.getAttribute(), new AttributeState(
                     property,
                     weightedScore,
                     maxPercentage,
                     currentPercentage,
-                    currentValue);
-            attributes.put(property.getAttribute(), state);
+                    currentValue));
         }
 
         return new CraftState(
@@ -132,12 +130,20 @@ public final class ResourceLaboratory {
             ExperimentalProperty property,
             double percentage) {
         if (property == null) throw new NullPointerException("property");
+        return interpolate(
+                property.getGroup(),
+                property.getMinValue(),
+                property.getMaxValue(),
+                percentage);
+    }
+
+    static double interpolate(
+            String group,
+            double min,
+            double max,
+            double percentage) {
         requireFiniteNonNegative(percentage, "percentage");
-
-        double min = property.getMinValue();
-        double max = property.getMaxValue();
-
-        if (property.getGroup().isEmpty()) {
+        if (group == null || group.isEmpty()) {
             return max > min ? max : min;
         }
         if (max > min) {

@@ -45,4 +45,11 @@ public final class CraftState {
     CraftState replaceAttributes(Map<String, AttributeState> replacement) {
         return new CraftState(schematic, evidenceState, replacement, warnings);
     }
+
+    CraftState replace(
+            Map<String, AttributeState> replacement,
+            List<String> replacementWarnings) {
+        return new CraftState(
+                schematic, evidenceState, replacement, replacementWarnings);
+    }
 }
