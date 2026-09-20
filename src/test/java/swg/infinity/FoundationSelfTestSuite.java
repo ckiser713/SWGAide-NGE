@@ -1,11 +1,13 @@
 package swg.infinity;
 
+import swg.infinity.analysis.CraftComparatorSelfTest;
 import swg.infinity.component.ComponentCombinerSelfTest;
 import swg.infinity.component.CraftedComponentFactorySelfTest;
 import swg.infinity.engine.InfinityCraftEngineSelfTest;
 import swg.infinity.engine.InfinityCraftServiceSelfTest;
 import swg.infinity.engine.ResourceLaboratorySelfTest;
 import swg.infinity.integration.SchematicBindingRegistrySelfTest;
+import swg.infinity.planning.MaterialPlannerSelfTest;
 
 /**
  * Dependency-free foundation suite for repositories that have not yet admitted
@@ -22,6 +24,8 @@ public final class FoundationSelfTestSuite {
         SchematicBindingRegistrySelfTest.main(args);
         InfinityCraftEngineSelfTest.main(args);
         InfinityCraftServiceSelfTest.main(args);
+        CraftComparatorSelfTest.main(args);
+        MaterialPlannerSelfTest.main(args);
         System.out.println("FoundationSelfTestSuite PASS");
     }
 }
