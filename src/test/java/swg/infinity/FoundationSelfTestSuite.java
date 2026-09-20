@@ -1,6 +1,7 @@
 package swg.infinity;
 
 import swg.infinity.analysis.CraftComparatorSelfTest;
+import swg.infinity.analysis.CraftExplainerSelfTest;
 import swg.infinity.component.ComponentCombinerSelfTest;
 import swg.infinity.component.CraftedComponentFactorySelfTest;
 import swg.infinity.engine.InfinityCraftEngineSelfTest;
@@ -25,6 +26,7 @@ public final class FoundationSelfTestSuite {
         InfinityCraftEngineSelfTest.main(args);
         InfinityCraftServiceSelfTest.main(args);
         CraftComparatorSelfTest.main(args);
+        CraftExplainerSelfTest.main(args);
         MaterialPlannerSelfTest.main(args);
         System.out.println("FoundationSelfTestSuite PASS");
     }
