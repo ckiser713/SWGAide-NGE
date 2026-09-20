@@ -3,6 +3,7 @@ package swg.infinity.component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,40 @@ public final class ComponentCombiner {
                 new LinkedHashMap<Integer, IngredientSlotDefinition>();
         for (IngredientSlotDefinition slot : state.getSchematic().getSlots()) {
             slots.put(Integer.valueOf(slot.getIndex()), slot);
+        }
+
+        Map<Integer, ComponentSlotAssignment> bySlot =
+                new HashMap<Integer, ComponentSlotAssignment>();
+        Map<String, Integer> consumedByComponent =
+                new HashMap<String, Integer>();
+
+        for (ComponentSlotAssignment assignment : ordered) {
+            Integer key = Integer.valueOf(assignment.getSlotIndex());
+            if (bySlot.put(key, assignment) != null) {
+                throw new IllegalArgumentException(
+                        "Duplicate component assignment for slot " + key);
+            }
+            for (ComponentUse use : assignment.getComponentUses()) {
+                String componentId = use.getComponent().getId();
+                Integer prior = consumedByComponent.get(componentId);
+                int consumed = (prior == null ? 0 : prior.intValue()) + use.getUses();
+                if (consumed > use.getComponent().getUses()) {
+                    throw new IllegalArgumentException(
+                            "Component " + componentId
+                            + " over-consumed: " + consumed
+                            + " > " + use.getComponent().getUses());
+                }
+                consumedByComponent.put(componentId, Integer.valueOf(consumed));
+            }
+        }
+
+        for (IngredientSlotDefinition slot : state.getSchematic().getSlots()) {
+            if (!slot.getKind().isComponent() || slot.getKind().isOptional()) continue;
+            if (!bySlot.containsKey(Integer.valueOf(slot.getIndex()))) {
+                throw new IllegalArgumentException(
+                        "Missing required component assignment for slot "
+                        + slot.getIndex());
+            }
         }
 
         Map<String, AttributeState> attributes =
@@ -132,7 +167,6 @@ public final class ComponentCombiner {
                             current.withCurrentValue(bitset));
                     break;
                 case OVERRIDE:
-                    // Infinity intentionally leaves the parent value untouched.
                     break;
                 case LIMITED:
                     double limited =
@@ -146,12 +180,11 @@ public final class ComponentCombiner {
                     attributes.put(
                             componentProperty.getAttribute(),
                             current.withCurrentValue(limited));
-                    // Mirrors the source-local modified flag assignment.
+                    // Mirrors ResourceLabratory::applyComponentStats local flag.
                     modified = false;
                     break;
                 case RESOURCE:
                 default:
-                    // No direct component mutation for RESOURCE/default.
                     break;
                 }
             }
