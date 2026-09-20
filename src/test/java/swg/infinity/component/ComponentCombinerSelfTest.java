@@ -3,7 +3,6 @@ package swg.infinity.component;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import swg.infinity.contracts.CombineType;
@@ -25,9 +24,11 @@ public final class ComponentCombinerSelfTest {
     public static void main(String[] args) {
         shouldApplyLinearContribution();
         shouldUseFirstPrototypeForMixedSlot();
-        shouldAcceptMultiUseComponent();
+        shouldAcceptMultiUseComponentWithoutSerial();
         shouldRejectSerialMismatchForIdenticalSlot();
         shouldInjectPreviouslyUnknownComponentProperty();
+        shouldIgnorePartialOptionalComponentStats();
+        shouldRejectMissingRequiredComponent();
         System.out.println("ComponentCombinerSelfTest PASS");
     }
 
@@ -43,11 +44,10 @@ public final class ComponentCombinerSelfTest {
                 new ComponentProperty(
                         "maxdamage", 100.0d, 0, "expDamage", false, source()));
 
-        CraftState result = new ComponentCombiner().apply(
-                initial,
-                Collections.singletonList(new ComponentSlotAssignment(
+        CraftState result = apply(initial,
+                new ComponentSlotAssignment(
                         0,
-                        Collections.singletonList(new ComponentUse(component, 1)))));
+                        Collections.singletonList(new ComponentUse(component, 1))));
 
         assertClose(60.0d, result.getAttribute("maxdamage").getCurrentValue(),
                 0.000001d, "linear current");
@@ -73,19 +73,18 @@ public final class ComponentCombinerSelfTest {
                 new ComponentProperty(
                         "maxdamage", 999.0d, 0, "expDamage", false, source()));
 
-        CraftState result = new ComponentCombiner().apply(
-                initial,
-                Collections.singletonList(new ComponentSlotAssignment(
+        CraftState result = apply(initial,
+                new ComponentSlotAssignment(
                         0,
                         Arrays.asList(
                                 new ComponentUse(first, 1),
-                                new ComponentUse(second, 1)))));
+                                new ComponentUse(second, 1))));
 
         assertClose(20.0d, result.getAttribute("maxdamage").getCurrentValue(),
                 0.000001d, "mixed first prototype");
     }
 
-    private static void shouldAcceptMultiUseComponent() {
+    private static void shouldAcceptMultiUseComponentWithoutSerial() {
         CraftState initial = state(
                 SlotKind.IDENTICAL_COMPONENT,
                 3,
@@ -93,15 +92,14 @@ public final class ComponentCombinerSelfTest {
                 property("maxdamage", CombineType.LINEAR, 1.0d, 20.0d),
                 10.0d);
         ComponentInstance component = component(
-                "multi", "(ONE-BATCH)", 5,
+                "multi", "", 5,
                 new ComponentProperty(
                         "maxdamage", 5.0d, 0, "expDamage", false, source()));
 
-        new ComponentCombiner().apply(
-                initial,
-                Collections.singletonList(new ComponentSlotAssignment(
+        apply(initial,
+                new ComponentSlotAssignment(
                         0,
-                        Collections.singletonList(new ComponentUse(component, 3)))));
+                        Collections.singletonList(new ComponentUse(component, 3))));
     }
 
     private static void shouldRejectSerialMismatchForIdenticalSlot() {
@@ -122,13 +120,12 @@ public final class ComponentCombinerSelfTest {
 
         boolean rejected = false;
         try {
-            new ComponentCombiner().apply(
-                    initial,
-                    Collections.singletonList(new ComponentSlotAssignment(
+            apply(initial,
+                    new ComponentSlotAssignment(
                             0,
                             Arrays.asList(
                                     new ComponentUse(one, 1),
-                                    new ComponentUse(two, 1)))));
+                                    new ComponentUse(two, 1))));
         } catch (IllegalArgumentException expected) {
             rejected = true;
         }
@@ -147,14 +144,62 @@ public final class ComponentCombinerSelfTest {
                 new ComponentProperty(
                         "specialbonus", 7.5d, 1, "bonus", false, source()));
 
-        CraftState result = new ComponentCombiner().apply(
-                initial,
-                Collections.singletonList(new ComponentSlotAssignment(
+        CraftState result = apply(initial,
+                new ComponentSlotAssignment(
                         0,
-                        Collections.singletonList(new ComponentUse(component, 1)))));
+                        Collections.singletonList(new ComponentUse(component, 1))));
 
         assertClose(7.5d, result.getAttribute("specialbonus").getCurrentValue(),
                 0.000001d, "injected property");
+    }
+
+    private static void shouldIgnorePartialOptionalComponentStats() {
+        CraftState initial = state(
+                SlotKind.OPTIONAL_MIXED_COMPONENT,
+                2,
+                1.0d,
+                property("maxdamage", CombineType.LINEAR, 1.0d, 20.0d),
+                10.0d);
+        ComponentInstance one = component(
+                "one", "", 1,
+                new ComponentProperty(
+                        "maxdamage", 100.0d, 0, "expDamage", false, source()));
+
+        CraftState result = apply(initial,
+                new ComponentSlotAssignment(
+                        0,
+                        Collections.singletonList(new ComponentUse(one, 1))));
+
+        assertClose(10.0d, result.getAttribute("maxdamage").getCurrentValue(),
+                0.000001d, "partial optional unchanged");
+        if (result.getWarnings().isEmpty()) {
+            throw new AssertionError("partial optional slot warning missing");
+        }
+    }
+
+    private static void shouldRejectMissingRequiredComponent() {
+        CraftState initial = state(
+                SlotKind.IDENTICAL_COMPONENT,
+                1,
+                1.0d,
+                property("maxdamage", CombineType.LINEAR, 1.0d, 20.0d),
+                10.0d);
+        boolean rejected = false;
+        try {
+            new ComponentCombiner().apply(
+                    initial, Collections.<ComponentSlotAssignment>emptyList());
+        } catch (IllegalArgumentException expected) {
+            rejected = true;
+        }
+        if (!rejected) {
+            throw new AssertionError("missing required component accepted");
+        }
+    }
+
+    private static CraftState apply(
+            CraftState state, ComponentSlotAssignment assignment) {
+        return new ComponentCombiner().apply(
+                state, Collections.singletonList(assignment));
     }
 
     private static CraftState state(

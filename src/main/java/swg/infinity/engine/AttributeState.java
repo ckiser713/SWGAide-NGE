@@ -61,6 +61,10 @@ public final class AttributeState {
     public double getMinValue() { return minValue; }
     public double getMaxValue() { return maxValue; }
 
+    /**
+     * Changes percentage and immediately recalculates current value. This is the
+     * correct operation for experimentation after ResourceLabratory::experimentRow.
+     */
     public AttributeState withCurrentPercentage(double percentage) {
         double bounded = clampPercentage(percentage, maxPercentage);
         return new AttributeState(
@@ -70,6 +74,22 @@ public final class AttributeState {
                 bounded,
                 ResourceLaboratory.interpolate(
                         property.getGroup(), minValue, maxValue, bounded),
+                minValue,
+                maxValue);
+    }
+
+    /**
+     * Mirrors AttributesMap::setCurrentPercentage without an immediate
+     * CraftingValues::recalculateValues pass. Used by component combination.
+     */
+    public AttributeState withPercentageOnly(double percentage) {
+        double bounded = clampPercentage(percentage, maxPercentage);
+        return new AttributeState(
+                property,
+                weightedScore,
+                maxPercentage,
+                bounded,
+                currentValue,
                 minValue,
                 maxValue);
     }

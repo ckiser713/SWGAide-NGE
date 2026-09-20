@@ -156,7 +156,7 @@ public final class ComponentCombiner {
                     current = current.withRange(
                             current.getMinValue() + propertyValue,
                             current.getMaxValue() + propertyValue);
-                    current = current.withCurrentPercentage(percentageValue);
+                    current = current.withPercentageOnly(percentageValue);
                     attributes.put(componentProperty.getAttribute(), current);
                     break;
                 case BITSET:
@@ -202,22 +202,23 @@ public final class ComponentCombiner {
         return state.withCalculationData(attributes, warnings);
     }
 
+    /**
+     * Infinity only begins serial comparison after the slot already contains a
+     * component. Therefore one component use-object (including a multi-use item
+     * that fills the slot) does not require a non-empty serial.
+     */
     private void validateIdentity(
             IngredientSlotDefinition slot,
             ComponentSlotAssignment assignment) {
         if (!slot.getKind().requiresIdenticalComponents()) return;
+        if (assignment.getComponentUses().size() < 2) return;
 
-        String serial = null;
-        for (ComponentUse use : assignment.getComponentUses()) {
-            String candidate = use.getComponent().getSerial();
-            if (candidate == null || candidate.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "Identical component slot " + slot.getIndex()
-                        + " requires component serial identity");
-            }
-            if (serial == null) {
-                serial = candidate;
-            } else if (!serial.equals(candidate)) {
+        String serial =
+                assignment.getComponentUses().get(0).getComponent().getSerial();
+        for (int i = 1; i < assignment.getComponentUses().size(); ++i) {
+            String candidate =
+                    assignment.getComponentUses().get(i).getComponent().getSerial();
+            if (!serial.equals(candidate)) {
                 throw new IllegalArgumentException(
                         "Component serial mismatch in identical slot "
                         + slot.getIndex());
