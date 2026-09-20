@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ckiser713.github.io/SWGAide-NGE/infinity/bindings.schema.json",
+  "title": "SWGAide to SWG Infinity Schematic Bindings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "serverId", "rulesetCommit", "bindings"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "serverId": { "const": 154 },
+    "rulesetCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{40}$" },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "swgAideSchematicId", "infinitySchematicId", "state", "evidence"
+        ],
+        "properties": {
+          "swgAideSchematicId": { "type": "integer", "minimum": 1 },
+          "infinitySchematicId": { "type": "string" },
+          "state": {
+            "enum": ["VERIFIED", "MANUAL_OVERRIDE", "AMBIGUOUS", "MISSING"]
+          },
+          "evidence": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ckiser713.github.io/SWGAide-NGE/infinity/ruleset.schema.json",
+  "title": "SWG Infinity Normalized Crafting Ruleset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest", "schematics", "coverage"],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion", "repository", "commit", "extractorVersion",
+        "rulesetHash", "swgAideServerId"
+      ],
+      "properties": {
+        "schemaVersion": { "type": "integer", "minimum": 1 },
+        "repository": { "const": "swginfinity/public" },
+        "commit": { "type": "string", "pattern": "^[0-9a-fA-F]{40}$" },
+        "extractorVersion": { "type": "string", "minLength": 1 },
+        "rulesetHash": { "type": "string", "minLength": 1 },
+        "swgAideServerId": { "const": 154 }
+      }
+    },
+    "schematics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/schematic" }
+    },
+    "coverage": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/coverage" }
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "sourcePath"],
+      "properties": {
+        "repository": { "const": "swginfinity/public" },
+        "commit": { "type": "string", "pattern": "^[0-9a-fA-F]{40}$" },
+        "sourcePath": { "type": "string", "minLength": 1 }
+      }
+    },
+    "weight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stat", "rawWeight", "normalizedWeight"],
+      "properties": {
+        "stat": {
+          "enum": ["CR", "CD", "DR", "HR", "FL", "MA", "PE", "OQ", "SR", "UT", "BK"]
+        },
+        "rawWeight": { "type": "integer", "minimum": 0 },
+        "normalizedWeight": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "experimentalProperty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attribute", "group", "minValue", "maxValue", "precision",
+        "hidden", "combineType", "weights", "provenance"
+      ],
+      "properties": {
+        "attribute": { "type": "string", "minLength": 1 },
+        "group": { "type": "string" },
+        "minValue": { "type": "number" },
+        "maxValue": { "type": "number" },
+        "precision": { "type": "integer", "minimum": 0 },
+        "hidden": { "type": "boolean" },
+        "combineType": {
+          "enum": ["RESOURCE", "LINEAR", "PERCENTAGE", "BITSET", "OVERRIDE", "LIMITED"]
+        },
+        "weights": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/weight" }
+        },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "index", "title", "kind", "acceptedType",
+        "quantity", "contribution", "provenance"
+      ],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "title": { "type": "string" },
+        "kind": {
+          "enum": [
+            "RESOURCE",
+            "IDENTICAL_COMPONENT",
+            "MIXED_COMPONENT",
+            "OPTIONAL_IDENTICAL_COMPONENT",
+            "OPTIONAL_MIXED_COMPONENT"
+          ]
+        },
+        "acceptedType": { "type": "string", "minLength": 1 },
+        "quantity": { "type": "integer", "minimum": 1 },
+        "contribution": { "type": "number", "minimum": 0 },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "schematic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "displayName", "draftTemplate", "targetTemplate",
+        "laboratory", "assemblySkill", "experimentationSkill",
+        "slots", "properties", "processorId", "provenance"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 },
+        "draftTemplate": { "type": "string", "minLength": 1 },
+        "targetTemplate": { "type": "string", "minLength": 1 },
+        "laboratory": { "enum": ["RESOURCE", "GENETIC", "DROID"] },
+        "assemblySkill": { "type": "string" },
+        "experimentationSkill": { "type": "string" },
+        "slots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/slot" }
+        },
+        "properties": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/experimentalProperty" }
+        },
+        "processorId": { "type": "string", "minLength": 1 },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "evidenceState": {
+      "enum": [
+        "EXACT",
+        "EXACT_WITH_FORCED_OUTCOME",
+        "SIMULATED",
+        "PARTIAL",
+        "UNSUPPORTED",
+        "UNKNOWN"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schematicId", "extraction", "laboratory",
+        "components", "processor", "fixtureIds"
+      ],
+      "properties": {
+        "schematicId": { "type": "string", "minLength": 1 },
+        "extraction": { "$ref": "#/$defs/evidenceState" },
+        "laboratory": { "$ref": "#/$defs/evidenceState" },
+        "components": { "$ref": "#/$defs/evidenceState" },
+        "processor": { "$ref": "#/$defs/evidenceState" },
+        "fixtureIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

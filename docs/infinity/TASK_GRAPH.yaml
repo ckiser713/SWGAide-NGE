@@ -1,0 +1,146 @@
+version: 1
+project: swgaide-infinity-crafting-lab
+authority:
+  swgaide:
+    repository: twistedatrocity/SWGAide-NGE
+    baseline_sha: 7f520ee508221cce3ac3e8871919e74de9fcb0c2
+  infinity:
+    repository: swginfinity/public
+    rules_sha: 6b6ac3726aaa3c293fca83911850d3a02e2adb4f
+  infinity_server_id: 154
+
+operator_gates:
+  - merge
+  - force_push
+  - java_version_change
+  - dependency_addition
+  - swgaide_dat_schema_change
+  - direct_agpl_source_copy
+  - destructive_ref_change
+
+tasks:
+  - id: G0_BASELINE
+    status: NEEDS_TERMINAL_EVIDENCE
+    objective: Reproduce untouched fork build and runtime baseline.
+    acceptance:
+      - exact baseline SHA checked out
+      - java -version captured
+      - mvn -version captured
+      - baseline build result captured
+      - SWGAide launch smoke captured
+    next_on_pass: G1_FOUNDATION_BUILD
+
+  - id: G1_FOUNDATION_BUILD
+    status: NEEDS_TERMINAL_EVIDENCE
+    depends_on: [G0_BASELINE]
+    objective: Compile the current feature branch without weakening contracts.
+    commands:
+      - mvn test-compile
+    acceptance:
+      - compile exit code 0
+      - no Java target/dependency changes made to force pass
+    next_on_pass: G2_SELF_TEST
+
+  - id: G2_SELF_TEST
+    status: NEEDS_TERMINAL_EVIDENCE
+    depends_on: [G1_FOUNDATION_BUILD]
+    objective: Execute dependency-free foundation test suite.
+    acceptance:
+      - FoundationSelfTestSuite exits 0
+      - actual output contains FoundationSelfTestSuite PASS
+    next_on_pass: G3_REAL_FIXTURES
+
+  - id: G3_REAL_FIXTURES
+    status: READY_AFTER_G2
+    depends_on: [G2_SELF_TEST]
+    objective: Replace synthetic arithmetic coverage with real pinned Infinity golden fixtures.
+    acceptance:
+      - at least 20 weapon fixture cases from GOLDEN_FIXTURE_PLAN.md
+      - expected intermediate and final values source-backed
+      - fixture provenance records pinned SHA and paths
+    next_on_pass: G4_RULESET_EXTRACTOR
+
+  - id: G4_RULESET_EXTRACTOR
+    status: PLANNED
+    depends_on: [G3_REAL_FIXTURES]
+    objective: Build sandboxed inheritance-resolving Infinity template extractor.
+    constraints:
+      - no regex-only Lua scraping
+      - no runtime dependency on Infinity repository
+      - fail closed on unknown globals/template failures
+      - content-address normalized output
+    acceptance:
+      - ruleset.schema.json validation
+      - deterministic output for same source SHA
+      - SHA-256 manifest
+      - extraction coverage report
+    next_on_pass: G5_BINDINGS
+
+  - id: G5_BINDINGS
+    status: PLANNED
+    depends_on: [G4_RULESET_EXTRACTOR]
+    objective: Bind SWGAide Infinity schematics to normalized Infinity source identities.
+    acceptance:
+      - bindings.schema.json validation
+      - VERIFIED/AMBIGUOUS/MISSING report
+      - no ambiguous binding runnable as exact
+    next_on_pass: G6_WEAPON_VERTICAL
+
+  - id: G6_WEAPON_VERTICAL
+    status: PLANNED
+    depends_on: [G3_REAL_FIXTURES, G5_BINDINGS]
+    objective: Declare first complete weapon vertical evidence-complete.
+    acceptance:
+      - resource weighting parity
+      - component combine parity
+      - exact exotic input parity
+      - recursive crafted component parity
+      - weapon processor parity
+      - Explain output reconciles intermediate math
+    next_on_pass: G7_UI
+
+  - id: G7_UI
+    status: PLANNED
+    depends_on: [G6_WEAPON_VERTICAL]
+    objective: Add additive Infinity Crafting Lab Swing workbench.
+    constraints:
+      - legacy SWGTestBench untouched
+      - server 154 feature gate
+      - no persistence schema change
+    acceptance:
+      - schematic opens in Infinity Lab
+      - current/inventory/manual resources selectable
+      - exact component entry
+      - compare and explain available
+      - unsupported paths explicit
+      - legacy app smoke unchanged
+    next_on_pass: G8_PERSISTENCE
+
+  - id: G8_PERSISTENCE
+    status: PLANNED
+    depends_on: [G7_UI]
+    objective: Add separate versioned Infinity scenario/component persistence.
+    constraints:
+      - do not serialize legacy live SWGAide object graph
+      - saved scenario pins ruleset commit/hash
+      - explicit migrations only
+    acceptance:
+      - scenario.schema.json validation
+      - round-trip tests
+      - migration tests
+      - unresolved resource fallback snapshot
+    next_on_pass: G9_EXPAND
+
+  - id: G9_EXPAND
+    status: PLANNED
+    depends_on: [G8_PERSISTENCE]
+    objective: Expand processors one evidence-complete vertical at a time.
+    order:
+      - armor
+      - doctor_medicine
+      - food_drink
+      - structures
+      - droids
+      - genetics
+      - jtl
+      - jedi
