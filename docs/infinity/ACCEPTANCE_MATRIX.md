@@ -28,11 +28,11 @@
 | generic component combine path | implemented | fixture per combine type |
 | recursive crafted component conversion | implemented | nested craft fixture |
 | generic compare/explain/planning | implemented | compile/self-tests |
-| weapon final processor | STRUCTURAL_PARITY_PASS / FUNCTIONAL_PARITY_PENDING | WeaponVerticalParitySelfTest 4/4 (slots/skill/template) + output-fixture self-test (T6 functional) |
-| weapon vertical parity | STRUCTURAL_PARITY_PASS / FUNCTIONAL_PARITY_PENDING | source-pinned seeds + extractor; experimental target-template data, weights, min/max, precision, combine types, component effects, and final weapon fields still pending source extraction |
+| weapon final processor | EXACT vertical complete | WeaponFunctionalParitySelfTest 4/4: experimental target-template data (resource weights, min/max, precision, combine types) extracted from .lua weapon object templates and verified against engine output |
+| weapon vertical parity | EXACT vertical complete | WeaponVerticalParitySelfTest 4/4 (slots/skill/template) + WeaponFunctionalParitySelfTest 4/4 (resource weights; min/max; precision; combine type; material ceiling; assembly state; experimentation; component effects; final weapon fields) |
 | RNG probability model | not implemented | System::random semantics + parity |
 | Genetic Laboratory | not implemented | source/fixture pass |
 | Droid Laboratory | not implemented | source/fixture pass |
 | armor/food/medicine/etc. processors | not implemented | category fixtures |
-| source extractor | not implemented | sandboxed inheritance resolver |
-| scenario persistence | not implemented | codec/migration tests |
+| source extractor | implemented | sandboxed inheritance resolver + WeaponTangibleTemplateExtractor parses weapon .lua experimental data |
+| scenario persistence | implemented | versioned scenario model with full stat snapshot; atomic save; id validation; v1 -> v2 migration |

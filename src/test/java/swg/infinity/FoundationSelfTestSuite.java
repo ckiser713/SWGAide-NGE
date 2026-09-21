@@ -14,6 +14,7 @@ import swg.infinity.engine.InfinityCraftServiceSelfTest;
 import swg.infinity.engine.ResourceLaboratorySelfTest;
 import swg.infinity.extract.ExtractionReportSelfTest;
 import swg.infinity.extract.ExtractorSelfTest;
+import swg.infinity.extract.WeaponFunctionalParitySelfTest;
 import swg.infinity.fixtures.SeedFixtureParseSelfTest;
 import swg.infinity.fixtures.WeaponVerticalParitySelfTest;
 import swg.infinity.integration.BindingClassificationSelfTest;
@@ -57,6 +58,7 @@ public final class FoundationSelfTestSuite {
         ExtractorSelfTest.main(args);
         SeedFixtureParseSelfTest.main(args);
         WeaponVerticalParitySelfTest.main(args);
+        WeaponFunctionalParitySelfTest.main(args);
         SWGCraftingSimulatorTabHeadlessSmoke.main(args);
         SimEngineFacadeRuntimeSelfTest.main(args);
         CraftsimPersistenceSelfTest.main(args);
