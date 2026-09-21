@@ -13,6 +13,7 @@ import swg.infinity.engine.InfinityCraftEngineSelfTest;
 import swg.infinity.engine.InfinityCraftServiceSelfTest;
 import swg.infinity.engine.ResourceLaboratorySelfTest;
 import swg.infinity.extract.ExtractionReportSelfTest;
+import swg.infinity.extract.ExtractorSelfTest;
 import swg.infinity.fixtures.SeedFixtureParseSelfTest;
 import swg.infinity.integration.SchematicBindingRegistrySelfTest;
 import swg.infinity.planning.MaterialPlannerSelfTest;
@@ -47,6 +48,7 @@ public final class FoundationSelfTestSuite {
         RulesetCatalogSelfTest.main(args);
         CraftingSkillMathSelfTest.main(args);
         ExtractionReportSelfTest.main(args);
+        ExtractorSelfTest.main(args);
         SeedFixtureParseSelfTest.main(args);
         SWGCraftingSimulatorTabHeadlessSmoke.main(args);
         CraftsimPersistenceSelfTest.main(args);

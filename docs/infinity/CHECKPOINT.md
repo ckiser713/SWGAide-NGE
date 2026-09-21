@@ -179,3 +179,95 @@ T2 commits pushed to `origin/feature/infinity-crafting-lab-foundation`:
 - `04b5134` feat(simulator): add cycle detection and boundary self-test
 
 Foundation suite now runs 17 self-tests, all PASS. `mvn test-compile` exit 0.
+
+### T3 source-backed seed fixture corpus (2026-09-20)
+
+- `SeedFixture` and `SeedFixtureParser` added in `swg.infinity.fixtures.*`.
+  Hand-rolled JSON reader, fail-closed, requires `provenance: source-pinned`.
+- Four source-pinned weapon seeds under
+  `src/test/resources/swg/infinity/fixtures/seeds/`:
+  `pistol_blaster_dl44`, `pistol_blaster_scout_trooper`, `carbine_geo`,
+  `rifle_berserker`. Each captures the canonical slot layout, resource
+  requirements, and target template from the pinned Infinity source.
+- `SeedFixtureParseSelfTest` asserts parser round-trip + provenance
+  enforcement.
+- Foundation suite now runs 18 self-tests, all PASS.
+
+### T7 functional native Crafting Simulator tab (2026-09-20)
+
+- `SWGCraftingSimulatorTab` lives in
+  `swg.gui.schematics.craftsim.*` (new package). Tab title
+  `"Crafting Simulator"`, mnemonic `VK_C`.
+- `SimEngineFacade` wraps the Infinity engine for run / render / compare
+  / explain. `CraftedComponentFactory` powers the recursive component
+  round-trip.
+- Banner renders selected server, rules provider, ruleset SHA, coverage
+  state. Schematic selector listens to `schematicSelect(...)` from
+  `SWGSchematicTab` and falls back to a manual selector.
+- Native resources pulled from `SWGResourceManager.getSet(galaxy)`,
+  `getSpawning(galaxy)`, and `SWGResController.inventory(galaxy)` with
+  a scope selector.
+- Run, Compare, Explain, and Materials planning are wired to the
+  engine. Exotic component input and recursive crafted components are
+  supported. RESOURCE_ONLY mode renders the banner but disables the
+  final simulation on unsupported providers.
+- Legacy `SWGSchematicTab.java` edits remain minimal: one new field,
+  one new `add(...)` call in `make()`, one new branch in
+  `schematicSelect(...)`. Existing tabs, mnemonic indices, behaviour,
+  and keyboard shortcuts are preserved.
+- `SWGCraftingSimulatorTabHeadlessSmoke` asserts tab registration,
+  mnemonic, and `SWGTestBench.java` byte-identity to baseline.
+- Foundation suite now runs 19 self-tests, all PASS.
+
+### T8 versioned simulator persistence (2026-09-20)
+
+- `CraftsimScenario`, `CraftsimMigration`, `CraftsimScenarioStore` live
+  in `swg.crafting.simulator.persistence.*`.
+- Storage: `<baseDir>/scenarios/<id>.craftsim.json`. New, isolated,
+  versioned. Does not modify `SWGAide.DAT`. No new third-party
+  dependencies.
+- Scenario pins `rulesProviderId`, `rulesetCommit`, and `rulesetHash`;
+  hash mismatch on load rejects deserialization.
+- Forward-only migration registry keyed by `schemaVersion`.
+- `CraftsimPersistenceSelfTest` exercises round-trip, hash rejection,
+  migration, and confirms `SWGAide.DAT` invariant.
+- Foundation suite now runs 20 self-tests, all PASS.
+
+### T4 sandboxed Infinity extractor (2026-09-20)
+
+- `LuaTemplateStubLoader` is a hand-rolled, token-aware Lua reader in
+  `swg.infinity.extract.*`. Supports table literals (records and
+  arrays), double-quoted strings, numbers, identifiers, line comments
+  (`--`) and block comments (`--[[ ... ]]`). Array values are emitted as
+  `ArrayList<Object>`, records as `LinkedHashMap<String, Object>`.
+  `parseFirstTable` walks past leading identifier + `=` + method-call
+  prefix (`object_X = parent:new { ... }`) to find the table literal.
+  Fail-closed on unhandled constructs.
+- `Extractor` reads `MMOCoreORB/bin/scripts/object/draft_schematic/weapon/*.lua`
+  from a pinned `swginfinity/public` checkout. Each parsed schematic
+  becomes a `SchematicDefinition` with provenance (`repository`,
+  `commit`, relative path). Slot kinds are mapped from
+  `ingredientSlotType` integer codes (0=RESOURCE, 1=IDENTICAL,
+  2=MIXED, 3=OPTIONAL_IDENTICAL, 4=OPTIONAL_MIXED).
+- `InfinityRuleset` ruleset hash is the SHA-256 of schematic ids +
+  draft templates + target templates. Deterministic: only
+  `LinkedHashMap` + `ArrayList` ordering, no time/locale input.
+- Coverage records report `SIMULATED` for slot data and `UNSUPPORTED`
+  for the experimental groups (those live in compiled `.iff`, not
+  source `.lua`). One quest schematic (`rifle_quest_rebel_longrifle`)
+  is excluded by the BLOCKER gate because it omits `customObjectName`
+  and `targetTemplate`; the remaining 75 weapon drafts are admitted.
+- `ExtractorSelfTest` runs against
+  `/home/thenexussidekick/swgaide-deps/swginfinity-public`. Asserts
+  ≥1 schematic extracted, manifest fields match the pinned source,
+  ruleset hash is deterministic across two extractions, DL44 has
+  exactly 6 slots, DL44 coverage is present, and the Lua reader fails
+  closed on the synthetic `bad_construct.lua` fixture.
+- Foundation suite now runs 21 self-tests, all PASS.
+
+T4 commits:
+
+- `a5171b4` feat(infinity): add seed fixture framework with 4 source-pinned weapon seeds (T3)
+- `a6efb86` feat(gui): add native Crafting Simulator tab inside SWGSchematicTab (T7)
+- `8893ef9` feat(simulator): add isolated versioned craftsim scenario persistence (T8)
+- (this commit) feat(extract): add sandboxed Infinity source extractor (T4)
