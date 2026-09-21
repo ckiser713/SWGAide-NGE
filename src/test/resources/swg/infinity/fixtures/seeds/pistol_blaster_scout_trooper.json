@@ -1,0 +1,28 @@
+{
+  "provenance": "source-pinned",
+  "id": "weapon.pistol.scout_trooper",
+  "source_sha": "6b6ac3726aaa3c293fca83911850d3a02e2adb4f",
+  "source_path": "MMOCoreORB/bin/scripts/object/draft_schematic/weapon/pistol_blaster_scout_trooper.lua",
+  "schematic_id": "object_draft_schematic_weapon_pistol_blaster_scout_trooper",
+  "family": "weapon",
+  "subcategory": "pistol",
+  "name": "Scout Blaster",
+  "complexity": 1,
+  "size": 3,
+  "xp_type": "crafting_weapons_general",
+  "xp": 60,
+  "assembly_skill": "weapon_assembly",
+  "experimenting_skill": "weapon_experimentation",
+  "customization_skill": "weapon_customization",
+  "target_template": "object/weapon/ranged/pistol/pistol_scout_blaster.iff",
+  "slots": [
+    {"index": 0, "title": "frame_assembly", "resource_type": "aluminum", "quantity": 18, "contribution": 100, "slot_kind": 0},
+    {"index": 1, "title": "receiver_assembly", "resource_type": "metal", "quantity": 8, "contribution": 100, "slot_kind": 0},
+    {"index": 2, "title": "grip_assembly", "resource_type": "metal", "quantity": 4, "contribution": 100, "slot_kind": 0},
+    {"index": 3, "title": "powerhandler", "resource_type": "object/tangible/component/weapon/shared_blaster_power_handler.iff", "quantity": 1, "contribution": 100, "slot_kind": 1},
+    {"index": 4, "title": "barrel", "resource_type": "object/tangible/component/weapon/shared_blaster_pistol_barrel.iff", "quantity": 1, "contribution": 100, "slot_kind": 1},
+    {"index": 5, "title": "scope", "resource_type": "object/tangible/component/weapon/shared_scope_weapon.iff", "quantity": 1, "contribution": 100, "slot_kind": 3}
+  ],
+  "resource_stats": {},
+  "experiment_groups": []
+}

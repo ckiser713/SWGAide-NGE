@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ckiser713.github.io/SWGAide-NGE/crafting-simulator/scenario.schema.json",
+  "title": "Saved SWGAide Crafting Simulator Scenario",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "serverId",
+    "serverName",
+    "rulesProviderId",
+    "rulesetCommit",
+    "rulesetHash",
+    "schematicId",
+    "assemblyOutcome",
+    "resources",
+    "components",
+    "experiments"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "serverId": { "type": "integer", "minimum": 1 },
+    "serverName": { "type": "string", "minLength": 1 },
+    "rulesProviderId": { "type": "string", "minLength": 1 },
+    "rulesetCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{40}$" },
+    "rulesetHash": { "type": "string", "minLength": 1 },
+    "schematicId": { "type": "string", "minLength": 1 },
+    "assemblyOutcome": {
+      "enum": [
+        "AMAZING", "GREAT", "GOOD", "MODERATE", "SUCCESS",
+        "MARGINAL", "OK", "BARELY", "CRITICAL"
+      ]
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slotIndex", "name", "resourceType", "classNames",
+          "stats", "availableQuantity", "origin"
+        ],
+        "properties": {
+          "slotIndex": { "type": "integer", "minimum": 0 },
+          "name": { "type": "string", "minLength": 1 },
+          "resourceType": { "type": "string", "minLength": 1 },
+          "classNames": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          },
+          "stats": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "CR": { "$ref": "#/$defs/stat" },
+              "CD": { "$ref": "#/$defs/stat" },
+              "DR": { "$ref": "#/$defs/stat" },
+              "HR": { "$ref": "#/$defs/stat" },
+              "FL": { "$ref": "#/$defs/stat" },
+              "MA": { "$ref": "#/$defs/stat" },
+              "PE": { "$ref": "#/$defs/stat" },
+              "OQ": { "$ref": "#/$defs/stat" },
+              "SR": { "$ref": "#/$defs/stat" },
+              "UT": { "$ref": "#/$defs/stat" }
+            }
+          },
+          "availableQuantity": { "type": "integer", "minimum": -1 },
+          "origin": {
+            "enum": [
+              "CURRENT", "INVENTORY", "MANUAL",
+              "HISTORICAL_REMOTE", "HYPOTHETICAL"
+            ]
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["slotIndex", "uses"],
+        "properties": {
+          "slotIndex": { "type": "integer", "minimum": 0 },
+          "uses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "componentId", "templateId", "serial",
+                "availableUses", "consumedUses", "origin", "properties"
+              ],
+              "properties": {
+                "componentId": { "type": "string", "minLength": 1 },
+                "templateId": { "type": "string", "minLength": 1 },
+                "serial": { "type": "string" },
+                "availableUses": { "type": "integer", "minimum": 1 },
+                "consumedUses": { "type": "integer", "minimum": 1 },
+                "origin": {
+                  "enum": [
+                    "CRAFTED", "OWNED_LOOT", "MANUAL",
+                    "HYPOTHETICAL", "SIMULATED_LOOT"
+                  ]
+                },
+                "properties": {
+                  "type": "object",
+                  "additionalProperties": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "experiments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["group", "points", "outcome"],
+        "properties": {
+          "group": { "type": "string", "minLength": 1 },
+          "points": { "type": "integer", "minimum": 1 },
+          "outcome": {
+            "enum": [
+              "AMAZING", "GREAT", "GOOD", "MODERATE", "SUCCESS",
+              "MARGINAL", "OK", "BARELY", "CRITICAL"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "stat": { "type": "integer", "minimum": 0, "maximum": 1000 }
+  }
+}

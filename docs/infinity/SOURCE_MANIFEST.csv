@@ -1,0 +1,31 @@
+authority,sha,path,purpose
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/crafting/SWGWeights.java,legacy WAR/reference math
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/crafting/resources/SWGResource.java,resource snapshot API
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/crafting/resources/SWGResourceClass.java,class hierarchy API
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/crafting/resources/SWGResourceStats.java,resource statistics API
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/crafting/schematics/SWGSchematic.java,legacy schematic navigation identity
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/crafting/schematics/SWGComponentSlot.java,legacy component topology
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/crafting/schematics/SWGSchematicsManager.java,server-specific override/navigation
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/gui/resources/SWGInventoryWrapper.java,inventory amount/assignee
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/gui/schematics/SWGTestBench.java,legacy Test Bench behavior to preserve
+SWGAide,7f520ee508221cce3ac3e8871919e74de9fcb0c2,src/main/java/swg/tools/SimplePrefsKeeper.java,legacy persistence boundary
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/managers/crafting/CraftingManagerImplementation.cpp,lab dispatch/assembly/experiment success
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/managers/crafting/labratories/SharedLabratory.cpp,weighted values/assembly/experiment modifiers
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/managers/crafting/labratories/ResourceLabratory.cpp,generic resource/component application
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/managers/crafting/labratories/GeneticLabratory.cpp,genetic strategy future work
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/managers/crafting/labratories/DroidLabratory.cpp,droid strategy future work
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/objects/player/sessions/crafting/CraftingSessionImplementation.cpp,experiment call sequence
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/objects/manufactureschematic/craftingvalues/CraftingValues.cpp,value interpolation
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/templates/crafting/AtributesMapImplementation.cpp,percentage/value setter clamping
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/templates/crafting/ValuesClasses.h,value/percentage state semantics
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/templates/crafting/AttributesMap.h,combine type constants
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/templates/crafting/resourceweight/ResourceWeight.h,weight normalization/stat tokens
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/templates/intangible/DraftSchematicObjectTemplate.cpp,draft slots/target template resolution
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/templates/crafting/draftslot/DraftSlot.h,quantity/contribution normalization
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/objects/manufactureschematic/ingredientslots/ComponentSlot.h,identity/use/fullness/prototype behavior
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/objects/resource/ResourceSpawnImplementation.cpp,generic resource stat lookup
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/objects/tangible/component/ComponentImplementation.cpp,crafted component properties/use count
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/objects/tangible/misc/CustomIngredientImplementation.cpp,custom resource ingredients
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/objects/tangible/weapon/WeaponObjectImplementation.cpp,weapon final processor
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/src/server/zone/managers/loot/LootManagerImplementation.cpp,loot generation future work
+Infinity,6b6ac3726aaa3c293fca83911850d3a02e2adb4f,MMOCoreORB/bin/scripts/managers/loot_manager.lua,loot rarity configuration future work

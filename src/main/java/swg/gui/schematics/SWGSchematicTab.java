@@ -123,6 +123,14 @@ public final class SWGSchematicTab extends JTabbedPane {
     private SWGLaboratoryTab laboratory;
 
     /**
+     * The native Crafting Simulator tab. Renders the selected server, the
+     * Infinity engine output, Compare, Explain, and Materials planning for
+     * the accepted weapon vertical. See swg.gui.schematics.craftsim for the
+     * tab implementation.
+     */
+    private swg.gui.schematics.craftsim.SWGCraftingSimulatorTab craftingSimulator;
+
+    /**
      * A GUI element for resource class use per profession and per schematic.
      */
     private SWGResourceClassUse resClassUse;
@@ -330,6 +338,7 @@ public final class SWGSchematicTab extends JTabbedPane {
         if (isGuiFinished) {
             draftSchems.focusGained(); // always
             laboratory.focusGained();
+            craftingSimulator.focusGained();
             todaysAlert.focusGained();
             resClassUse.focusGained();
             tintTabs(false);
@@ -352,19 +361,22 @@ public final class SWGSchematicTab extends JTabbedPane {
         laboratory = new SWGLaboratoryTab(this);
         todaysAlert = new SWGTodays(this);
         resClassUse = new SWGResourceClassUse(this);
+        craftingSimulator = new swg.gui.schematics.craftsim.SWGCraftingSimulatorTab(this);
 
         // add them after all are created, not to trigger GUI action
         // events until all are at least a pre-state
 
         add("Draft Schematics", draftSchems);
         add("The Laboratory", laboratory);
+        add(swg.gui.schematics.craftsim.SWGCraftingSimulatorTab.TAB_TITLE, craftingSimulator);
         add("Today's Alert", todaysAlert);
         add("Resource Class Use", resClassUse);
 
         this.setMnemonicAt(0, KeyEvent.VK_D);
         this.setMnemonicAt(1, KeyEvent.VK_L);
-        this.setMnemonicAt(2, KeyEvent.VK_T);
-        this.setMnemonicAt(3, KeyEvent.VK_U);
+        this.setMnemonicAt(2, swg.gui.schematics.craftsim.SWGCraftingSimulatorTab.TAB_MNEMONIC);
+        this.setMnemonicAt(3, KeyEvent.VK_T);
+        this.setMnemonicAt(4, KeyEvent.VK_U);
 
         assigneeMenuItem = assigneeMenu();
 
@@ -461,6 +473,7 @@ public final class SWGSchematicTab extends JTabbedPane {
 
             if (src != draftSchems) draftSchems.schemSelect(s);
             if (src != laboratory) laboratory.schemSelect(s);
+            if (src != craftingSimulator) craftingSimulator.schemSelect(s);
             isSelectingSchem = false;
         }
     }
@@ -535,19 +548,19 @@ public final class SWGSchematicTab extends JTabbedPane {
             	MetalTheme theme = MetalLookAndFeel.getCurrentTheme();
             	if(todaysAlert.todaysTinted()) {
             		if(theme.getName().contains("Dark")) {
-            			setForegroundAt(2, UIManager.getColor("SWG.colorAlert"));
+            			setForegroundAt(3, UIManager.getColor("SWG.colorAlert"));
             			SWGAide.frame().getTabPane().setForegroundAt(3, UIManager.getColor("SWG.colorAlert"));
             		} else {
-            			setBackgroundAt(2, UIManager.getColor("SWG.colorAlert"));
+            			setBackgroundAt(3, UIManager.getColor("SWG.colorAlert"));
             			SWGAide.frame().getTabPane().setBackgroundAt(3, UIManager.getColor("SWG.colorAlert"));
             		}
             	} else {
             		if(theme.getName().contains("Dark")) {
                     	Color fg = UIManager.getColor("TabbedPane.foreground");
-                    	setForegroundAt(2, fg);
+                    	setForegroundAt(3, fg);
                     	SWGAide.frame().getTabPane().setForegroundAt(3, fg);
                     } else {
-                    	setBackgroundAt(2, null);
+                    	setBackgroundAt(3, null);
                 		SWGAide.frame().getTabPane().setBackgroundAt(3, null);
                     }
             	}

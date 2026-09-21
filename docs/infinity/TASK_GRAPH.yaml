@@ -1,0 +1,199 @@
+version: 2
+project: swgaide-crafting-simulator
+architecture: generic_engine_plus_server_rules_modules
+
+authority:
+  swgaide:
+    repository: twistedatrocity/SWGAide-NGE
+    baseline_sha: 7f520ee508221cce3ac3e8871919e74de9fcb0c2
+  infinity:
+    repository: swginfinity/public
+    rules_sha: 6b6ac3726aaa3c293fca83911850d3a02e2adb4f
+    swgaide_server_id: 154
+
+ui_contract:
+  host: SWGSchematicTab
+  tab_name: Crafting Simulator
+  position: after The Laboratory
+  selected_server_source: SWGFrame.getSelectedGalaxy()
+  selected_schematic_sync: true
+  separate_resource_database: false
+  legacy_test_bench_unchanged: true
+
+resource_contract:
+  current: SWGResourceManager.getSpawning(galaxy)
+  loaded_recent: SWGResourceManager.getSet(galaxy)
+  inventory: SWGResController.inventory(galaxy)
+  private_cache_scraping: prohibited
+
+rules_resolution:
+  precedence:
+    - EXACT_SERVER
+    - VERIFIED_FAMILY
+    - NONE
+  equal_priority_matches: fail_closed
+  family_metadata_alone_is_evidence: false
+  unsupported_server_mode: resource_only
+
+operator_gates:
+  - merge
+  - force_push
+  - java_version_change
+  - dependency_addition
+  - swgaide_dat_schema_change
+  - direct_agpl_source_copy
+  - destructive_ref_change
+  - material_scope_expansion
+
+tasks:
+  - id: G0_BASELINE
+    status: NEEDS_TERMINAL_EVIDENCE
+    objective: Reproduce untouched fork build/runtime baseline.
+    acceptance:
+      - exact baseline SHA checked out
+      - java -version captured
+      - mvn -version captured
+      - baseline build result captured
+      - SWGAide launch smoke captured
+    next_on_pass: G1_FOUNDATION_BUILD
+
+  - id: G1_FOUNDATION_BUILD
+    status: NEEDS_TERMINAL_EVIDENCE
+    depends_on: [G0_BASELINE]
+    objective: Compile current feature branch without weakening contracts.
+    commands:
+      - mvn test-compile
+    acceptance:
+      - compile exit code 0
+      - no Java target/dependency change used to force pass
+    next_on_pass: G2_SELF_TEST
+
+  - id: G2_SELF_TEST
+    status: NEEDS_TERMINAL_EVIDENCE
+    depends_on: [G1_FOUNDATION_BUILD]
+    objective: Execute dependency-free foundation suite.
+    acceptance:
+      - FoundationSelfTestSuite exits 0
+      - actual output contains FoundationSelfTestSuite PASS
+    next_on_pass: G2A_GENERIC_CORE_BOUNDARY
+
+  - id: G2A_GENERIC_CORE_BOUNDARY
+    status: READY_AFTER_G2
+    depends_on: [G2_SELF_TEST]
+    objective: Finish provider-neutral boundary before additional vertical expansion.
+    constraints:
+      - generic reusable services migrate toward swg.crafting.simulator
+      - Infinity source quirks remain in Infinity module
+      - no blind mass package move before compile evidence
+      - ServerRulesRegistry remains authority for module selection
+    acceptance:
+      - generic core has no Infinity package dependency except through provider interfaces
+      - Infinity provider exactly targets server 154
+      - unsupported server returns no exact provider
+      - exact provider outranks verified family provider
+    next_on_pass: G3_REAL_FIXTURES
+
+  - id: G3_REAL_FIXTURES
+    status: READY_AFTER_G2A
+    depends_on: [G2A_GENERIC_CORE_BOUNDARY]
+    objective: Replace synthetic arithmetic coverage with real pinned Infinity golden fixtures.
+    acceptance:
+      - at least 20 weapon cases from GOLDEN_FIXTURE_PLAN.md
+      - intermediate and final expected values source-backed
+      - fixture provenance records pinned SHA and paths
+    next_on_pass: G4_INFINITY_EXTRACTOR
+
+  - id: G4_INFINITY_EXTRACTOR
+    status: PLANNED
+    depends_on: [G3_REAL_FIXTURES]
+    objective: Build sandboxed inheritance-resolving Infinity server module extractor.
+    constraints:
+      - no regex-only Lua scraping
+      - no runtime dependency on Infinity repository
+      - fail closed on unknown globals/template failures
+      - content-address normalized output
+    acceptance:
+      - ruleset.schema.json validation
+      - deterministic output for same source SHA
+      - SHA-256 manifest
+      - extraction coverage report
+    next_on_pass: G5_INFINITY_BINDINGS
+
+  - id: G5_INFINITY_BINDINGS
+    status: PLANNED
+    depends_on: [G4_INFINITY_EXTRACTOR]
+    objective: Bind SWGAide server-154 schematics to Infinity source identities.
+    acceptance:
+      - bindings.schema.json validation
+      - VERIFIED/AMBIGUOUS/MISSING report
+      - no ambiguous binding runnable as exact
+    next_on_pass: G6_INFINITY_WEAPON_VERTICAL
+
+  - id: G6_INFINITY_WEAPON_VERTICAL
+    status: PLANNED
+    depends_on: [G3_REAL_FIXTURES, G5_INFINITY_BINDINGS]
+    objective: Declare first exact server-module weapon vertical.
+    acceptance:
+      - resource weighting parity
+      - component combine parity
+      - exact exotic input parity
+      - recursive component parity
+      - weapon processor parity
+      - Explain output reconciles arithmetic
+    next_on_pass: G7_NATIVE_TAB
+
+  - id: G7_NATIVE_TAB
+    status: PLANNED
+    depends_on: [G6_INFINITY_WEAPON_VERTICAL]
+    objective: Add Crafting Simulator as native SWGSchematicTab child.
+    constraints:
+      - label is Crafting Simulator
+      - insert after The Laboratory
+      - legacy SWGTestBench untouched
+      - selected schematic synchronized
+      - selected galaxy drives both resources and rules provider
+      - no second resource database/feed
+      - no persistence schema change
+    acceptance:
+      - tab visible inside Schematics
+      - current resources selectable
+      - loaded/recent resources selectable
+      - inventory resources selectable with quantity
+      - exact component input
+      - Compare and Explain available
+      - rules/coverage banner visible
+      - unsupported server enters resource-only mode
+      - legacy app smoke unchanged
+    next_on_pass: G8_PERSISTENCE
+
+  - id: G8_PERSISTENCE
+    status: PLANNED
+    depends_on: [G7_NATIVE_TAB]
+    objective: Add separate versioned simulator scenario/component persistence.
+    constraints:
+      - do not serialize legacy live SWGAide object graph
+      - saved scenario pins provider/ruleset commit/hash
+      - explicit migrations only
+    acceptance:
+      - scenario schema validation
+      - round-trip tests
+      - migration tests
+      - unresolved resource fallback snapshot
+    next_on_pass: G9_EXPAND_MODULES
+
+  - id: G9_EXPAND_MODULES
+    status: PLANNED
+    depends_on: [G8_PERSISTENCE]
+    objective: Expand server modules and item processors only with evidence.
+    infinity_vertical_order:
+      - armor
+      - doctor_medicine
+      - food_drink
+      - structures
+      - droids
+      - genetics
+      - jtl
+      - jedi
+    future_server_rule:
+      - exact server module preferred
+      - verified family module permitted only with independent evidence
