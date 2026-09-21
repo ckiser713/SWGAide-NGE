@@ -1,0 +1,29 @@
+{
+  "provenance": "source-pinned",
+  "id": "weapon.carbine.geo",
+  "source_sha": "6b6ac3726aaa3c293fca83911850d3a02e2adb4f",
+  "source_path": "MMOCoreORB/bin/scripts/object/draft_schematic/weapon/carbine_geo.lua",
+  "schematic_id": "object_draft_schematic_weapon_carbine_geo",
+  "family": "weapon",
+  "subcategory": "carbine",
+  "name": "Geonosian Sonic Carbine",
+  "complexity": 1,
+  "size": 1,
+  "xp_type": "crafting_weapons_general",
+  "xp": 350,
+  "assembly_skill": "weapon_assembly",
+  "experimenting_skill": "weapon_experimentation",
+  "customization_skill": "weapon_customization",
+  "target_template": "object/weapon/ranged/carbine/carbine_geo.iff",
+  "slots": [
+    {"index": 0, "title": "frame_assembly", "resource_type": "aluminum_chromium", "quantity": 150, "contribution": 100, "slot_kind": 0},
+    {"index": 1, "title": "receiver_assembly", "resource_type": "copper_mythra", "quantity": 75, "contribution": 100, "slot_kind": 0},
+    {"index": 2, "title": "grip_assembly", "resource_type": "aluminum_chromium", "quantity": 40, "contribution": 100, "slot_kind": 0},
+    {"index": 3, "title": "powerhandler", "resource_type": "object/tangible/component/weapon/shared_blaster_power_handler.iff", "quantity": 5, "contribution": 100, "slot_kind": 1},
+    {"index": 4, "title": "barrel", "resource_type": "object/tangible/component/weapon/shared_blaster_rifle_barrel.iff", "quantity": 1, "contribution": 100, "slot_kind": 1},
+    {"index": 5, "title": "scope", "resource_type": "object/tangible/component/weapon/shared_scope_weapon.iff", "quantity": 1, "contribution": 100, "slot_kind": 1},
+    {"index": 6, "title": "power_supply", "resource_type": "object/tangible/component/weapon/shared_geonosian_power_cube_base.iff", "quantity": 2, "contribution": 100, "slot_kind": 1}
+  ],
+  "resource_stats": {},
+  "experiment_groups": []
+}

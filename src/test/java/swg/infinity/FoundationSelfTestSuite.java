@@ -13,6 +13,7 @@ import swg.infinity.engine.InfinityCraftEngineSelfTest;
 import swg.infinity.engine.InfinityCraftServiceSelfTest;
 import swg.infinity.engine.ResourceLaboratorySelfTest;
 import swg.infinity.extract.ExtractionReportSelfTest;
+import swg.infinity.fixtures.SeedFixtureParseSelfTest;
 import swg.infinity.integration.SchematicBindingRegistrySelfTest;
 import swg.infinity.planning.MaterialPlannerSelfTest;
 import swg.infinity.rules.RulesetCatalogSelfTest;
@@ -44,6 +45,7 @@ public final class FoundationSelfTestSuite {
         RulesetCatalogSelfTest.main(args);
         CraftingSkillMathSelfTest.main(args);
         ExtractionReportSelfTest.main(args);
+        SeedFixtureParseSelfTest.main(args);
         System.out.println("FoundationSelfTestSuite PASS");
     }
 }
