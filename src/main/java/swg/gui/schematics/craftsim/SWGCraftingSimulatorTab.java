@@ -461,7 +461,7 @@ public final class SWGCraftingSimulatorTab extends JPanel {
                             steps);
             lastScenario = scenario;
             swg.crafting.simulator.scenario.CraftResult result =
-                    SimEngineFacade.run(scenario);
+                    SimEngineFacade.runExact(activeRuleset, scenario);
             resultArea.setText(SimEngineFacade.renderResult(result));
             if (captureForCompare) {
                 if (lastResultA == null) {

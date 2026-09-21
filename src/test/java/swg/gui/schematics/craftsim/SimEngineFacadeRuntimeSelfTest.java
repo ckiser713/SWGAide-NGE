@@ -34,6 +34,8 @@ import swg.infinity.engine.ResourceInput;
 import swg.infinity.engine.ResourceOrigin;
 import swg.infinity.engine.ResourceSlotAssignment;
 import swg.infinity.extract.Extractor;
+import swg.infinity.extract.InfinityWeaponRulesetComposer;
+import swg.infinity.extract.WeaponTangibleTemplateExtractor;
 import swg.infinity.integration.SchematicBinding;
 import swg.infinity.integration.SchematicBindingRegistry;
 
@@ -72,7 +74,17 @@ public final class SimEngineFacadeRuntimeSelfTest {
                     "Infinity source checkout missing at " + source);
         }
         String commit = "6b6ac3726aaa3c293fca83911850d3a02e2adb4f";
-        InfinityRuleset ruleset = new Extractor(source, commit).extractWeapons();
+        InfinityRuleset draftRuleset =
+                new Extractor(source, commit).extractWeapons();
+        java.util.Map<String,
+                WeaponTangibleTemplateExtractor.WeaponObjectTemplate> tangibles =
+                new WeaponTangibleTemplateExtractor(source, commit).extract();
+        java.util.Set<String> admitted =
+                new java.util.LinkedHashSet<String>();
+        admitted.add("pistol_blaster_dl44");
+        InfinityRuleset ruleset =
+                new InfinityWeaponRulesetComposer().compose(
+                        draftRuleset, tangibles, admitted);
 
         // 1) Facade binding path: DL44 binding resolution against the
         //    seed registry produced by T5.
@@ -93,14 +105,13 @@ public final class SimEngineFacadeRuntimeSelfTest {
             throw new AssertionError("DL44 should have 6 slots");
         }
 
-        // 2) Facade execution path: pair the bound DL44 structural
-        //    schematic with a deterministic experimental-property set
-        //    that lets the engine produce attributes and a final
-        //    weapon result. Properties are sourced from the Infinity
-        //    generic weapon contract so the test exercises the real
-        //    ResourceLaboratory + WeaponResultProcessor code paths.
-        SchematicDefinition dl44 = withWeaponProperties(
-                extracted.definition, commit);
+        // 2) Facade execution path: the production effective ruleset already
+        //    contains source-extracted tangible experimental properties.
+        SchematicDefinition dl44 = extracted.definition;
+        if (dl44.getProperties().isEmpty()) {
+            throw new AssertionError(
+                    "effective DL44 must contain experimental properties");
+        }
         SimEngineFacade.BoundSchematic bound = new SimEngineFacade.BoundSchematic(
                 extracted.swgSchematic, extracted.binding, dl44, true);
 
@@ -141,7 +152,7 @@ public final class SimEngineFacadeRuntimeSelfTest {
             throw new AssertionError("scenario must carry components");
         }
 
-        CraftResult result = SimEngineFacade.run(scenario);
+        CraftResult result = SimEngineFacade.runExact(ruleset, scenario);
         if (result == null) {
             throw new AssertionError("engine returned null result");
         }
@@ -175,7 +186,7 @@ public final class SimEngineFacadeRuntimeSelfTest {
                 bound, resources, components,
                 CraftOutcomeTier.CRITICAL,
                 Collections.<ExperimentStep>emptyList());
-        CraftResult resultB = SimEngineFacade.run(scenarioB);
+        CraftResult resultB = SimEngineFacade.runExact(ruleset, scenarioB);
         CraftComparison comparison = SimEngineFacade.compare(result, resultB);
         if (comparison == null || comparison.getDeltas() == null
                 || comparison.getDeltas().isEmpty()) {
@@ -214,59 +225,6 @@ public final class SimEngineFacadeRuntimeSelfTest {
                 + " attributes, "
                 + comparison.getDeltas().size() + " deltas, "
                 + explanation.getAttributes().size() + " explained attrs)");
-    }
-
-    /**
-     * Builds a copy of the supplied DL44 schematic with the standard
-     * Infinity weapon experimental-property set (mindamage,
-     * maxdamage, attackspeed, attack costs, hitpoints). This is what
-     * the .iff carries but the .lua does not; pairing the
-     * source-derived slot structure with these properties exercises
-     * the engine path without claiming source extraction.
-     */
-    private static SchematicDefinition withWeaponProperties(
-            SchematicDefinition raw, String commit) {
-        Provenance prov = raw.getProvenance();
-        List<ExperimentalProperty> props =
-                new ArrayList<ExperimentalProperty>();
-        props.add(weighted("mindamage", 10.0d, 50.0d, prov));
-        props.add(weighted("maxdamage", 20.0d, 100.0d, prov));
-        props.add(weighted("attackspeed", 5.0d, 3.0d, prov));
-        props.add(fixed("attackhealthcost", 20.0d, prov));
-        props.add(fixed("attackactioncost", 30.0d, prov));
-        props.add(fixed("attackmindcost", 40.0d, prov));
-        props.add(weighted("hitpoints", 500.0d, 1000.0d, prov));
-        return new SchematicDefinition(
-                raw.getId(),
-                raw.getDisplayName(),
-                raw.getDraftTemplate(),
-                raw.getTargetTemplate(),
-                raw.getLaboratory(),
-                raw.getAssemblySkill(),
-                raw.getExperimentationSkill(),
-                raw.getSlots(),
-                Collections.unmodifiableList(props),
-                "weapon",
-                prov);
-    }
-
-    private static ExperimentalProperty weighted(
-            String name, double min, double max, Provenance prov) {
-        return new ExperimentalProperty(
-                name, "exp", min, max, 2, false,
-                CombineType.RESOURCE,
-                Collections.singletonList(
-                        new PropertyWeight(ResourceStat.UT, 1, 1.0d)),
-                prov);
-    }
-
-    private static ExperimentalProperty fixed(
-            String name, double value, Provenance prov) {
-        return new ExperimentalProperty(
-                name, "", value, value, 0, true,
-                CombineType.LIMITED,
-                Collections.<PropertyWeight>emptyList(),
-                prov);
     }
 
     private static ResourceInput buildSyntheticResource(

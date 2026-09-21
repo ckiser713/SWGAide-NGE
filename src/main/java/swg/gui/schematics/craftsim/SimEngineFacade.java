@@ -21,6 +21,7 @@ import swg.infinity.component.ComponentSlotAssignment;
 import swg.infinity.contracts.InfinityRuleset;
 import swg.infinity.contracts.SchematicDefinition;
 import swg.infinity.engine.InfinityCraftEngine;
+import swg.infinity.engine.InfinityCraftService;
 import swg.infinity.engine.ResourceSlotAssignment;
 import swg.infinity.integration.SchematicBinding;
 import swg.infinity.integration.SchematicBindingRegistry;
@@ -143,6 +144,21 @@ public final class SimEngineFacade {
     /**
      * Runs the supplied scenario through the deterministic
      * {@link InfinityCraftEngine}. Convenience wrapper for the tab.
+     */
+    /**
+     * Executes through the fail-closed exact-coverage service. Production UI
+     * code must use this path.
+     */
+    public static CraftResult runExact(
+            InfinityRuleset ruleset,
+            CraftScenario scenario) {
+        if (ruleset == null) throw new NullPointerException("ruleset");
+        return new InfinityCraftService().executeExact(ruleset, scenario);
+    }
+
+    /**
+     * Raw arithmetic execution retained for isolated engine diagnostics only.
+     * Do not use this path from production UI code.
      */
     public static CraftResult run(CraftScenario scenario) {
         return new InfinityCraftEngine().execute(scenario);
