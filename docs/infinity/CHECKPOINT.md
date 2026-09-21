@@ -530,3 +530,27 @@ is empty. Byte-identity invariant holds.
 
 No open UNKNOWN has been silently flipped to PASS. Every claim above
 has terminal evidence captured at HEAD `22238c0`.
+
+
+## Final pre-review gate status
+
+The reconciliation receipt is accepted.
+
+- reconciled production/test source tree: `22238c0bc5ce1183f8468b7ca1787818c2c4d5c7`
+- final receipt docs head before this gate declaration:
+  `796d9c16a9a423a3e87eb94cbb1d540c2df39235`
+- JDK 8 compile: **PASS**
+- FoundationSelfTestSuite: **PASS (35 tests)**
+- bundled runtime artifact: **PASS / committed**
+- bundled ruleset load: **PASS**
+- source-derived weapon functional parity: **PASS (4/4 accepted corpus)**
+- production facade runtime path: **PASS**
+- persistence v2 revalidation: **PASS**
+- SWGTestBench byte identity: **PASS**
+- live full SWGAide GUI session: **PENDING FINAL GATE**
+
+The live GUI smoke in `LIVE_GUI_SMOKE.md` is required before changing PR #1
+from draft to ready-for-review.
+
+CI remains independently `INFRASTRUCTURE_BLOCKED`; that state is not being
+reclassified as a code failure.

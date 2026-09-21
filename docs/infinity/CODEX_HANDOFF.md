@@ -252,3 +252,20 @@ Before any module expansion, perform these actions on the exact current head:
 
 Read `docs/infinity/RUNTIME_ARTIFACT.md` for the exact artifact-generation
 contract.
+
+
+## Final pre-review gate — live SWGAide GUI smoke
+
+The reconciled production/test source tree at `22238c0` passed the JDK8 build and
+35-test foundation suite. The later `796d9c1` commit is documentation-only.
+
+Before changing PR #1 from draft to ready-for-review, execute the live GUI smoke
+defined in:
+
+`docs/infinity/LIVE_GUI_SMOKE.md`
+
+This smoke is now the only required product-level gate for the accepted
+Infinity weapon milestone.
+
+Do not substitute headless registration tests for this live smoke.
+Do not merge as part of the smoke.
