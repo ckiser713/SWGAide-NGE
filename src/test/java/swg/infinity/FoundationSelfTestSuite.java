@@ -1,5 +1,6 @@
 package swg.infinity;
 
+import swg.crafting.simulator.ServerSimulationContextSelfTest;
 import swg.crafting.simulator.rules.ServerRulesRegistrySelfTest;
 import swg.infinity.analysis.CraftComparatorSelfTest;
 import swg.infinity.analysis.CraftExplainerSelfTest;
@@ -25,6 +26,7 @@ public final class FoundationSelfTestSuite {
 
     public static void main(String[] args) {
         ServerRulesRegistrySelfTest.main(args);
+        ServerSimulationContextSelfTest.main(args);
         ResourceLaboratorySelfTest.main(args);
         ComponentCombinerSelfTest.main(args);
         CraftedComponentFactorySelfTest.main(args);
