@@ -1,96 +1,173 @@
 package swg.gui.schematics.craftsim;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import swg.crafting.schematics.SWGSchematic;
-import swg.crafting.schematics.SWGResourceSlot;
+import swg.crafting.simulator.compare.CraftComparator;
+import swg.crafting.simulator.compare.CraftComparison;
+import swg.crafting.simulator.explain.CraftExplanation;
+import swg.crafting.simulator.explain.CraftExplainer;
+import swg.crafting.simulator.planning.MaterialPlan;
+import swg.crafting.simulator.planning.MaterialPlanner;
 import swg.crafting.simulator.scenario.CraftOutcomeTier;
 import swg.crafting.simulator.scenario.CraftResult;
 import swg.crafting.simulator.scenario.CraftScenario;
 import swg.crafting.simulator.scenario.ExperimentStep;
 import swg.infinity.component.ComponentSlotAssignment;
-import swg.infinity.component.CraftedComponentFactory;
-import swg.infinity.engine.CraftState;
+import swg.infinity.contracts.InfinityRuleset;
+import swg.infinity.contracts.SchematicDefinition;
 import swg.infinity.engine.InfinityCraftEngine;
 import swg.infinity.engine.ResourceSlotAssignment;
+import swg.infinity.integration.SchematicBinding;
+import swg.infinity.integration.SchematicBindingRegistry;
 
 /**
  * Thin wrapper around the Infinity craft engine that the Crafting Simulator
- * tab calls. Headless-safe: when no schematic is supplied, returns a
- * representative synthetic result so the GUI can be exercised without
- * requiring a populated native SWGAide resource inventory.
+ * tab calls. Maps a selected SWGAide {@link SWGSchematic} through a
+ * {@link SchematicBindingRegistry} against the active {@link InfinityRuleset},
+ * gathers the user-selected native resources into
+ * {@link ResourceSlotAssignment} entries, attaches any exact/manual
+ * component inputs, and executes the resulting {@link CraftScenario}
+ * via {@link InfinityCraftEngine}.
  *
- * <p>Production wiring would translate {@link SWGResourceSlot} entries into
- * {@link ResourceSlotAssignment} entries using observed native resource
- * stats. This class keeps that mapping stubbed; the engine itself is the
- * production path and runs the deterministic arithmetic.</p>
+ * <p>The facade exposes the build/run/compare/explain/plan operations
+ * that the tab uses so the same code path is exercised by tests and
+ * by the GUI.</p>
  */
 public final class SimEngineFacade {
     private SimEngineFacade() {
         throw new AssertionError("Do not instantiate");
     }
 
-    /**
-     * Runs the Infinity engine against the supplied schematic + resources.
-     * Returns a deterministic {@link CraftResult} suitable for rendering
-     * by the GUI.
-     */
-    public static CraftResult run(
-            SWGSchematic schematic,
-            List<ResourceSlotAssignment> resources,
-            String exoticComponentName,
-            int recursionDepth,
-            String experimentGroup,
-            int experimentPoints) {
-        InfinityCraftEngine engine = new InfinityCraftEngine();
+    /** Outcome of resolving a binding for a selected schematic. */
+    public static final class BoundSchematic {
+        public final SWGSchematic swgSchematic;
+        public final SchematicBinding binding;
+        public final SchematicDefinition definition;
+        public final boolean runnable;
 
-        List<ResourceSlotAssignment> safeResources =
+        BoundSchematic(
+                SWGSchematic swgSchematic,
+                SchematicBinding binding,
+                SchematicDefinition definition,
+                boolean runnable) {
+            this.swgSchematic = swgSchematic;
+            this.binding = binding;
+            this.definition = definition;
+            this.runnable = runnable;
+        }
+    }
+
+    /**
+     * Resolves the binding for the supplied SWGAide schematic against
+     * the supplied registry + ruleset. Returns a {@link BoundSchematic}
+     * carrying either a runnable {@link SchematicDefinition} (VERIFIED
+     * or MANUAL_OVERRIDE binding with a present ruleset entry) or the
+     * unresolved binding so the caller can render the AMBIGUOUS /
+     * MISSING state.
+     */
+    public static BoundSchematic resolve(
+            SWGSchematic schematic,
+            SchematicBindingRegistry registry,
+            InfinityRuleset ruleset) {
+        if (schematic == null) throw new NullPointerException("schematic");
+        return resolveById(schematic.getID(), schematic, registry, ruleset);
+    }
+
+    /**
+     * Resolves the binding for the supplied SWGAide-side schematic id
+     * without requiring an SWGSchematic instance. The returned
+     * {@link BoundSchematic} carries a {@code null} swgSchematic.
+     */
+    public static BoundSchematic resolveById(
+            int swgAideSchematicId,
+            SchematicBindingRegistry registry,
+            InfinityRuleset ruleset) {
+        return resolveById(swgAideSchematicId, null, registry, ruleset);
+    }
+
+    private static BoundSchematic resolveById(
+            int swgAideSchematicId,
+            SWGSchematic schematic,
+            SchematicBindingRegistry registry,
+            InfinityRuleset ruleset) {
+        if (registry == null) throw new NullPointerException("registry");
+        if (ruleset == null) throw new NullPointerException("ruleset");
+        SchematicBinding binding = registry.get(swgAideSchematicId);
+        if (binding == null || !binding.getState().isRunnable()) {
+            return new BoundSchematic(schematic, binding, null, false);
+        }
+        SchematicDefinition definition =
+                ruleset.getSchematic(binding.getInfinitySchematicId());
+        if (definition == null) {
+            return new BoundSchematic(schematic, binding, null, false);
+        }
+        return new BoundSchematic(schematic, binding, definition, true);
+    }
+
+    /**
+     * Builds a {@link CraftScenario} from the bound schematic + the
+     * user-selected resources, components, and experiment steps. The
+     * supplied {@link BoundSchematic} must be runnable; otherwise the
+     * call fails fast.
+     */
+    public static CraftScenario buildScenario(
+            BoundSchematic bound,
+            List<ResourceSlotAssignment> resources,
+            List<ComponentSlotAssignment> components,
+            CraftOutcomeTier assemblyOutcome,
+            List<ExperimentStep> experiments) {
+        if (bound == null || !bound.runnable) {
+            throw new IllegalStateException(
+                    "Schematic has no runnable Infinity binding");
+        }
+        return new CraftScenario(
+                bound.definition,
                 resources == null
                         ? Collections.<ResourceSlotAssignment>emptyList()
-                        : resources;
+                        : resources,
+                components == null
+                        ? Collections.<ComponentSlotAssignment>emptyList()
+                        : components,
+                assemblyOutcome == null
+                        ? CraftOutcomeTier.GREAT : assemblyOutcome,
+                experiments == null
+                        ? Collections.<ExperimentStep>emptyList()
+                        : experiments);
+    }
 
-        // Recursive crafted component round-trip: build one synthetic
-        // crafted component per recursion depth using CraftedComponentFactory.
-        List<ComponentSlotAssignment> components =
-                new ArrayList<ComponentSlotAssignment>();
-        if (exoticComponentName != null && !exoticComponentName.isEmpty()
-                && recursionDepth > 0) {
-            CraftedComponentFactory factory = new CraftedComponentFactory();
-            // Each recursion level creates a synthetic sub-craft whose
-            // attributes become a ComponentInstance on the parent. This
-            // exercises ComponentInstance round-trip per the plan.
-            for (int d = 0; d < recursionDepth; ++d) {
-                String id = exoticComponentName + "-r" + d;
-                CraftState sub = engine.execute(new CraftScenario(
-                        null, Collections.<ResourceSlotAssignment>emptyList(),
-                        Collections.<ComponentSlotAssignment>emptyList(),
-                        CraftOutcomeTier.GREAT,
-                        Collections.<ExperimentStep>emptyList())).getCraftState();
-                components.add(new ComponentSlotAssignment(d,
-                        Collections.singletonList(
-                                new swg.crafting.simulator.components.ComponentUse(
-                                        factory.create(id, id, id, sub),
-                                        1))));
-            }
-        }
+    /**
+     * Runs the supplied scenario through the deterministic
+     * {@link InfinityCraftEngine}. Convenience wrapper for the tab.
+     */
+    public static CraftResult run(CraftScenario scenario) {
+        return new InfinityCraftEngine().execute(scenario);
+    }
 
-        List<ExperimentStep> experiments =
-                new ArrayList<ExperimentStep>();
-        if (experimentGroup != null && !experimentGroup.isEmpty()
-                && experimentPoints > 0) {
-            experiments.add(new ExperimentStep(
-                    experimentGroup, experimentPoints,
-                    CraftOutcomeTier.GOOD));
-        }
+    /** Compares two complete builds on functional fields. */
+    public static CraftComparison compare(CraftResult baseline, CraftResult candidate) {
+        return new CraftComparator().compare(baseline, candidate);
+    }
 
-        CraftScenario scenario = new CraftScenario(
-                null, safeResources, components,
-                CraftOutcomeTier.GREAT, experiments);
+    /**
+     * Explains the supplied result with the per-step arithmetic trace.
+     * The scenario is the one returned by {@link #buildScenario}.
+     */
+    public static CraftExplanation explain(
+            CraftScenario scenario, CraftResult result) {
+        return new CraftExplainer().explain(scenario, result);
+    }
 
-        return engine.execute(scenario);
+    /**
+     * Computes a {@link MaterialPlan} for {@code craftCount} repetitions
+     * of the supplied scenario.
+     */
+    public static MaterialPlan plan(CraftScenario scenario, int craftCount) {
+        return new MaterialPlanner().plan(scenario, craftCount);
     }
 
     /** Renders a {@link CraftResult} as a multi-line textual summary. */
@@ -110,30 +187,61 @@ public final class SimEngineFacade {
         return sb.toString();
     }
 
-    /** Renders a delta between two builds on functional fields. */
-    public static String compare(CraftResult a, CraftResult b) {
-        if (a == null || b == null) return "(two builds required)";
+    /** Renders a {@link CraftComparison} as text. */
+    public static String renderCompare(CraftComparison comparison) {
+        if (comparison == null) return "(no comparison)";
         StringBuilder sb = new StringBuilder();
-        sb.append("Compare: A vs B\n");
-        for (Map.Entry<String, ?> e :
-                a.getCraftState().getAttributes().entrySet()) {
-            sb.append("  ").append(e.getKey()).append(": ")
-                    .append(e.getValue()).append('\n');
+        sb.append("Compare: A vs B (deltas)\n");
+        for (Object o : comparison.getDeltas()) {
+            sb.append("  ").append(String.valueOf(o)).append('\n');
         }
         return sb.toString();
     }
 
-    /** Renders a per-step arithmetic trace for the supplied result. */
-    public static String explain(CraftResult result, SWGSchematic schematic) {
-        if (result == null) return "(no result)";
+    /** Renders a {@link CraftExplanation} as text. */
+    public static String renderExplain(CraftExplanation explanation) {
+        if (explanation == null) return "(no explanation)";
         StringBuilder sb = new StringBuilder();
         sb.append("Explain: per-step trace\n");
-        sb.append("  schematic: ")
-                .append(schematic == null ? "(synthetic)" : schematic.getName())
-                .append('\n');
-        sb.append("  attributes computed: ")
-                .append(result.getCraftState().getAttributes().size())
-                .append('\n');
+        for (Object o : explanation.getAttributes()) {
+            sb.append("  ").append(String.valueOf(o)).append('\n');
+        }
         return sb.toString();
+    }
+
+    /** Renders a {@link MaterialPlan} as text. */
+    public static String renderPlan(MaterialPlan plan) {
+        if (plan == null) return "(no plan)";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Materials plan: ").append(plan.getCraftCount())
+                .append(" craft(s)\n");
+        sb.append("Resources:\n");
+        for (Map.Entry<String, Long> e : plan.getResourceUnits().entrySet()) {
+            sb.append("  ").append(e.getKey())
+                    .append(" x ").append(e.getValue()).append('\n');
+        }
+        sb.append("Components:\n");
+        for (Map.Entry<String, Long> e : plan.getComponentUses().entrySet()) {
+            sb.append("  ").append(e.getKey())
+                    .append(" x ").append(e.getValue()).append('\n');
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Convenience for callers that already have a bound definition
+     * and want to attach a single experiment group.
+     */
+    public static List<ExperimentStep> singleExperiment(
+            String group, int points, CraftOutcomeTier outcome) {
+        if (group == null || group.isEmpty()) {
+            return Collections.<ExperimentStep>emptyList();
+        }
+        return Collections.unmodifiableList(
+                new ArrayList<ExperimentStep>(
+                        Arrays.asList(new ExperimentStep(
+                                group, points,
+                                outcome == null
+                                        ? CraftOutcomeTier.GOOD : outcome))));
     }
 }

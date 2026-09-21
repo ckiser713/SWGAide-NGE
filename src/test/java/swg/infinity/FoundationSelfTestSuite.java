@@ -23,6 +23,7 @@ import swg.infinity.planning.MaterialPlannerSelfTest;
 import swg.infinity.rules.RulesetCatalogSelfTest;
 import swg.infinity.rules.RulesetIntegritySelfTest;
 import swg.gui.schematics.craftsim.SWGCraftingSimulatorTabHeadlessSmoke;
+import swg.gui.schematics.craftsim.SimEngineFacadeRuntimeSelfTest;
 import swg.crafting.simulator.persistence.CraftsimPersistenceSelfTest;
 
 /**
@@ -57,6 +58,7 @@ public final class FoundationSelfTestSuite {
         SeedFixtureParseSelfTest.main(args);
         WeaponVerticalParitySelfTest.main(args);
         SWGCraftingSimulatorTabHeadlessSmoke.main(args);
+        SimEngineFacadeRuntimeSelfTest.main(args);
         CraftsimPersistenceSelfTest.main(args);
         System.out.println("FoundationSelfTestSuite PASS");
     }
