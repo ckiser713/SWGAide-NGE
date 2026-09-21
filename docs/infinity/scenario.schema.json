@@ -1,16 +1,27 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ckiser713.github.io/SWGAide-NGE/infinity/scenario.schema.json",
-  "title": "Saved SWG Infinity Craft Scenario",
+  "$id": "https://ckiser713.github.io/SWGAide-NGE/crafting-simulator/scenario.schema.json",
+  "title": "Saved SWGAide Crafting Simulator Scenario",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schemaVersion", "rulesetCommit", "rulesetHash",
-    "schematicId", "assemblyOutcome", "resources",
-    "components", "experiments"
+    "schemaVersion",
+    "serverId",
+    "serverName",
+    "rulesProviderId",
+    "rulesetCommit",
+    "rulesetHash",
+    "schematicId",
+    "assemblyOutcome",
+    "resources",
+    "components",
+    "experiments"
   ],
   "properties": {
     "schemaVersion": { "type": "integer", "minimum": 1 },
+    "serverId": { "type": "integer", "minimum": 1 },
+    "serverName": { "type": "string", "minLength": 1 },
+    "rulesProviderId": { "type": "string", "minLength": 1 },
     "rulesetCommit": { "type": "string", "pattern": "^[0-9a-fA-F]{40}$" },
     "rulesetHash": { "type": "string", "minLength": 1 },
     "schematicId": { "type": "string", "minLength": 1 },
