@@ -412,17 +412,10 @@ public final class SWGCraftingSimulatorTab extends JPanel {
         SWGCGalaxy galaxy = SWGFrame.getSelectedGalaxy();
         if (galaxy == null) return Collections.emptyList();
         NativeResourceAdapter.Scope scope = currentScope();
-        List<swg.crafting.resources.SWGResource> candidates =
+        List<swg.crafting.simulator.resources.ResourceSnapshot> candidates =
                 NativeResourceAdapter.loadScope(scope, galaxy);
-        swg.infinity.engine.ResourceOrigin origin = scope == null
-                ? swg.infinity.engine.ResourceOrigin.MANUAL
-                : (scope == NativeResourceAdapter.Scope.INVENTORY
-                        ? swg.infinity.engine.ResourceOrigin.INVENTORY
-                        : (scope == NativeResourceAdapter.Scope.CURRENT_SPAWNING
-                                ? swg.infinity.engine.ResourceOrigin.CURRENT
-                                : swg.infinity.engine.ResourceOrigin.CURRENT));
         NativeResourceAdapter.Resolved resolved =
-                NativeResourceAdapter.resolve(def, candidates, origin);
+                NativeResourceAdapter.resolve(def, candidates);
         if (!resolved.warnings.isEmpty()) {
             StringBuilder warn = new StringBuilder(
                     "Resource scope warnings:\n");
