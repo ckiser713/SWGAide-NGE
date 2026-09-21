@@ -18,6 +18,7 @@ import swg.infinity.integration.SchematicBindingRegistrySelfTest;
 import swg.infinity.planning.MaterialPlannerSelfTest;
 import swg.infinity.rules.RulesetCatalogSelfTest;
 import swg.infinity.rules.RulesetIntegritySelfTest;
+import swg.gui.schematics.craftsim.SWGCraftingSimulatorTabHeadlessSmoke;
 
 /**
  * Dependency-free foundation suite for repositories that have not yet admitted
@@ -46,6 +47,7 @@ public final class FoundationSelfTestSuite {
         CraftingSkillMathSelfTest.main(args);
         ExtractionReportSelfTest.main(args);
         SeedFixtureParseSelfTest.main(args);
+        SWGCraftingSimulatorTabHeadlessSmoke.main(args);
         System.out.println("FoundationSelfTestSuite PASS");
     }
 }
