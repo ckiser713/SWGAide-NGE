@@ -5,7 +5,7 @@ import swg.crafting.simulator.scenario.CraftResult;
 import swg.crafting.simulator.contracts.CoverageRecord;
 import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.InfinityRuleset;
-import swg.crafting.simulator.contracts.RulesetValidator;
+import swg.infinity.contracts.RulesetValidator;
 import swg.infinity.contracts.SchematicDefinition;
 
 /**

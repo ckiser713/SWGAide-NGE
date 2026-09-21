@@ -1,6 +1,5 @@
 package swg.crafting.simulator.scenario;
 import swg.infinity.engine.ResourceSlotAssignment;
-import swg.infinity.engine.InfinityCraftEngine;
 
 import java.util.ArrayList;
 import java.util.Collections;

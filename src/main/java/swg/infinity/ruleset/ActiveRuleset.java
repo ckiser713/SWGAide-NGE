@@ -1,4 +1,4 @@
-package swg.crafting.simulator.ruleset;
+package swg.infinity.ruleset;
 
 import swg.infinity.contracts.InfinityRuleset;
 

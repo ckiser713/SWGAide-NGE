@@ -1,10 +1,11 @@
-package swg.crafting.simulator.contracts;
+package swg.infinity.contracts;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.InfinityRuleset;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.PropertyWeight;
 import swg.infinity.contracts.ResourceStat;
 import swg.infinity.contracts.SchematicDefinition;
+import swg.crafting.simulator.contracts.RulesetManifest;
 
 import java.util.HashSet;
 import java.util.List;

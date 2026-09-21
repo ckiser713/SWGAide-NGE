@@ -1,6 +1,8 @@
 package swg.infinity;
 
+import swg.crafting.simulator.GenericCoreBoundarySelfTest;
 import swg.crafting.simulator.ServerSimulationContextSelfTest;
+import swg.crafting.simulator.components.RecursiveCraftCycleSelfTest;
 import swg.crafting.simulator.rules.ServerRulesRegistrySelfTest;
 import swg.infinity.analysis.CraftComparatorSelfTest;
 import swg.infinity.analysis.CraftExplainerSelfTest;
@@ -24,7 +26,9 @@ public final class FoundationSelfTestSuite {
     private FoundationSelfTestSuite() {
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        GenericCoreBoundarySelfTest.main(args);
+        RecursiveCraftCycleSelfTest.main(args);
         ServerRulesRegistrySelfTest.main(args);
         ServerSimulationContextSelfTest.main(args);
         ResourceLaboratorySelfTest.main(args);
