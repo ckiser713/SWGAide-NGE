@@ -6,8 +6,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Immutable normalized ruleset consumed by the Infinity crafting engine. */
-public final class InfinityRuleset {
+import swg.crafting.simulator.rules.CraftingRuleset;
+
+/**
+ * Immutable normalized SWG Infinity ruleset.
+ *
+ * <p>InfinityRuleset is the first concrete server module implementing the
+ * provider-neutral CraftingRuleset identity. Rich Infinity-specific schematic
+ * and coverage contracts remain in this module.</p>
+ */
+public final class InfinityRuleset implements CraftingRuleset {
     private final RulesetManifest manifest;
     private final Map<String, SchematicDefinition> schematics;
     private final Map<String, CoverageRecord> coverage;
@@ -51,5 +59,25 @@ public final class InfinityRuleset {
     public List<SchematicDefinition> getSchematics() {
         return Collections.unmodifiableList(
                 new ArrayList<SchematicDefinition>(schematics.values()));
+    }
+
+    @Override
+    public String getRulesRepository() {
+        return manifest.getRepository();
+    }
+
+    @Override
+    public String getRulesCommit() {
+        return manifest.getCommit();
+    }
+
+    @Override
+    public String getRulesetHash() {
+        return manifest.getRulesetHash();
+    }
+
+    @Override
+    public int getTargetServerId() {
+        return manifest.getSwgAideServerId();
     }
 }
