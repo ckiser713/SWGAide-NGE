@@ -91,13 +91,8 @@ public final class SWGCraftingSimulatorTab extends JPanel {
             resourceSelectors =
                     new LinkedHashMap<Integer, JComboBox<
                             swg.crafting.simulator.resources.ResourceSnapshot>>();
-    private final JComboBox<ComponentSlotChoice> exactComponentSlot =
-            new JComboBox<ComponentSlotChoice>();
-    private final JTextField exoticComponentField = new JTextField(18);
-    private final JTextField exoticSerialField = new JTextField(10);
-    private final JSpinner exoticUsesSpinner = new JSpinner(
-            new SpinnerNumberModel(1, 1, 100, 1));
-    private final JTextField exoticPropertiesField = new JTextField(34);
+    private final Map<Integer, ComponentSlotEditor> componentEditors =
+            new LinkedHashMap<Integer, ComponentSlotEditor>();
     private final JSpinner recursionDepthSpinner = new JSpinner(
             new SpinnerNumberModel(1, 1, 32, 1));
     private final JComboBox<String> experimentGroupBox =
@@ -240,18 +235,10 @@ public final class SWGCraftingSimulatorTab extends JPanel {
                 BorderLayout.CENTER);
 
         JPanel components = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        components.add(new JLabel("Exact component slot:"));
-        components.add(exactComponentSlot);
-        components.add(new JLabel("  Name/ID:"));
-        components.add(exoticComponentField);
-        components.add(new JLabel("  Serial:"));
-        components.add(exoticSerialField);
-        components.add(new JLabel("  Uses available:"));
-        components.add(exoticUsesSpinner);
-        components.add(new JLabel("  Properties:"));
-        exoticPropertiesField.setToolTipText(
-                "Comma separated, e.g. mindamage=43,maxdamage=171,attackspeed=-0.8");
-        components.add(exoticPropertiesField);
+        components.add(new JLabel(
+                "Component slots are entered inline above. "
+                + "Exact properties example: "
+                + "mindamage=43,maxdamage=171,attackspeed=-0.8"));
         components.add(new JLabel("  Recursion safety depth:"));
         components.add(recursionDepthSpinner);
 
@@ -388,6 +375,7 @@ public final class SWGCraftingSimulatorTab extends JPanel {
     private void refreshIngredientGrid() {
         ingredientPanel.removeAll();
         resourceSelectors.clear();
+        componentEditors.clear();
 
         if (selectedSchematic == null) {
             ingredientPanel.add(new JLabel(
@@ -469,40 +457,16 @@ public final class SWGCraftingSimulatorTab extends JPanel {
                     row.add(new JLabel("No compatible resource"));
                 }
             } else {
-                row.add(new JLabel(
-                        "Component slot — configure below / exact component input"));
+                ComponentSlotEditor editor =
+                        new ComponentSlotEditor(slot);
+                componentEditors.put(
+                        Integer.valueOf(slot.getIndex()), editor);
+                editor.addTo(row);
             }
             ingredientPanel.add(row);
         }
 
-        refreshExactComponentSlots(bound.definition);
         finishIngredientRefresh();
-    }
-
-    private void refreshExactComponentSlots(
-            swg.infinity.contracts.SchematicDefinition definition) {
-        Object previous = exactComponentSlot.getSelectedItem();
-        Integer previousIndex = previous instanceof ComponentSlotChoice
-                ? Integer.valueOf(((ComponentSlotChoice) previous).slotIndex)
-                : null;
-
-        exactComponentSlot.removeAllItems();
-        for (swg.infinity.contracts.IngredientSlotDefinition slot
-                : definition.getSlots()) {
-            if (slot.getKind() != null && slot.getKind().isComponent()) {
-                ComponentSlotChoice choice = new ComponentSlotChoice(
-                        slot.getIndex(),
-                        slot.getTitle(),
-                        slot.getAcceptedType(),
-                        slot.getQuantity(),
-                        slot.getKind().isOptional());
-                exactComponentSlot.addItem(choice);
-                if (previousIndex != null
-                        && previousIndex.intValue() == slot.getIndex()) {
-                    exactComponentSlot.setSelectedItem(choice);
-                }
-            }
-        }
     }
 
     private void finishIngredientRefresh() {
@@ -627,29 +591,34 @@ public final class SWGCraftingSimulatorTab extends JPanel {
             gatherExactComponents(
                     swg.infinity.contracts.SchematicDefinition definition,
                     int recursionDepth) {
-        ComponentSlotChoice choice =
-                (ComponentSlotChoice) exactComponentSlot.getSelectedItem();
-        String id = exoticComponentField.getText() == null
-                ? "" : exoticComponentField.getText().trim();
-        String properties = exoticPropertiesField.getText() == null
-                ? "" : exoticPropertiesField.getText().trim();
+        List<swg.infinity.component.ComponentSlotAssignment> out =
+                new ArrayList<swg.infinity.component.ComponentSlotAssignment>();
 
-        if (choice == null || id.isEmpty()) {
-            return Collections
-                    .<swg.infinity.component.ComponentSlotAssignment>emptyList();
+        for (swg.infinity.contracts.IngredientSlotDefinition slot
+                : definition.getSlots()) {
+            if (slot.getKind() == null || !slot.getKind().isComponent()) {
+                continue;
+            }
+
+            ComponentSlotEditor editor =
+                    componentEditors.get(Integer.valueOf(slot.getIndex()));
+            swg.crafting.simulator.components.ExactComponentInput input =
+                    editor == null ? null : editor.toExactInput();
+
+            if (input == null) {
+                if (slot.getKind().isOptional()) {
+                    continue;
+                }
+                throw new IllegalArgumentException(
+                        "required component slot " + slot.getIndex()
+                        + " (" + slot.getTitle() + ") has no component");
+            }
+
+            out.addAll(SimEngineFacadeBridge.componentsForExact(
+                    input, recursionDepth, definition));
         }
 
-        swg.crafting.simulator.components.ExactComponentInput input =
-                new swg.crafting.simulator.components.ExactComponentInput(
-                        choice.slotIndex,
-                        id,
-                        exoticSerialField.getText(),
-                        ((Integer) exoticUsesSpinner.getValue()).intValue(),
-                        swg.crafting.simulator.components
-                            .ExactComponentPropertyParser.parse(properties));
-
-        return SimEngineFacadeBridge.componentsForExact(
-                input, recursionDepth, definition);
+        return Collections.unmodifiableList(out);
     }
 
     private NativeResourceAdapter.Scope currentScope() {
@@ -704,42 +673,51 @@ public final class SWGCraftingSimulatorTab extends JPanel {
         return InfinityGalaxyBinding.isInfinity(galaxy);
     }
 
-    private static final class ComponentSlotChoice {
-        final int slotIndex;
-        final String title;
-        final String acceptedType;
-        final int quantity;
-        final boolean optional;
 
-        ComponentSlotChoice(
-                int slotIndex,
-                String title,
-                String acceptedType,
-                int quantity,
-                boolean optional) {
-            this.slotIndex = slotIndex;
-            this.title = title == null ? "" : title;
-            this.acceptedType = acceptedType == null ? "" : acceptedType;
-            this.quantity = quantity;
-            this.optional = optional;
+    private static final class ComponentSlotEditor {
+        private final swg.infinity.contracts.IngredientSlotDefinition slot;
+        private final JTextField id = new JTextField(13);
+        private final JTextField serial = new JTextField(8);
+        private final JSpinner uses;
+        private final JTextField properties = new JTextField(30);
+
+        ComponentSlotEditor(
+                swg.infinity.contracts.IngredientSlotDefinition slot) {
+            this.slot = slot;
+            this.uses = new JSpinner(new SpinnerNumberModel(
+                    Math.max(1, slot.getQuantity()),
+                    1,
+                    1000,
+                    1));
+            properties.setToolTipText(
+                    "attribute=value pairs, comma separated");
         }
 
-        @Override
-        public String toString() {
-            return "#" + slotIndex + " " + title
-                    + " x" + quantity
-                    + (optional ? " optional" : "");
+        void addTo(JPanel row) {
+            row.add(new JLabel(slot.getKind().isOptional()
+                    ? "Optional component:"
+                    : "Required component:"));
+            row.add(new JLabel("ID/name"));
+            row.add(id);
+            row.add(new JLabel("serial"));
+            row.add(serial);
+            row.add(new JLabel("uses"));
+            row.add(uses);
+            row.add(new JLabel("properties"));
+            row.add(properties);
         }
 
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof ComponentSlotChoice
-                    && ((ComponentSlotChoice) other).slotIndex == slotIndex;
-        }
-
-        @Override
-        public int hashCode() {
-            return slotIndex;
+        swg.crafting.simulator.components.ExactComponentInput toExactInput() {
+            String value = id.getText() == null ? "" : id.getText().trim();
+            if (value.isEmpty()) return null;
+            return new swg.crafting.simulator.components.ExactComponentInput(
+                    slot.getIndex(),
+                    value,
+                    serial.getText(),
+                    ((Integer) uses.getValue()).intValue(),
+                    swg.crafting.simulator.components
+                        .ExactComponentPropertyParser.parse(
+                            properties.getText()));
         }
     }
 }
