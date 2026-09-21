@@ -1,4 +1,5 @@
 package swg.infinity.engine;
+import swg.crafting.simulator.scenario.AttributeState;
 
 import java.util.ArrayList;
 import java.util.Collections;

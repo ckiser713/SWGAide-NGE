@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import swg.infinity.engine.AttributeState;
+import swg.crafting.simulator.scenario.AttributeState;
 import swg.infinity.engine.CraftState;
 
 /**

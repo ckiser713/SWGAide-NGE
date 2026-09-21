@@ -12,7 +12,7 @@ import swg.infinity.contracts.CombineType;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.PropertyWeight;
-import swg.infinity.engine.AttributeState;
+import swg.crafting.simulator.scenario.AttributeState;
 import swg.infinity.engine.CraftState;
 
 /**

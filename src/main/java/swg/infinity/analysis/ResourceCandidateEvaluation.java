@@ -1,6 +1,6 @@
 package swg.infinity.analysis;
 
-import swg.infinity.engine.CraftResult;
+import swg.crafting.simulator.scenario.CraftResult;
 import swg.infinity.engine.ResourceInput;
 
 /** Accepted or rejected result for one candidate resource substitution. */

@@ -13,7 +13,7 @@ import swg.infinity.contracts.LaboratoryType;
 import swg.crafting.simulator.contracts.Provenance;
 import swg.infinity.contracts.SchematicDefinition;
 import swg.infinity.contracts.SlotKind;
-import swg.infinity.engine.AttributeState;
+import swg.crafting.simulator.scenario.AttributeState;
 import swg.infinity.engine.CraftState;
 
 /** Dependency-free tests for source-observed generic component behavior. */

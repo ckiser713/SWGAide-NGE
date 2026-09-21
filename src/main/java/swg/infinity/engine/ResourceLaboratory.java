@@ -1,4 +1,6 @@
 package swg.infinity.engine;
+import swg.crafting.simulator.scenario.CraftOutcomeTier;
+import swg.crafting.simulator.scenario.AttributeState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,17 +178,8 @@ public final class ResourceLaboratory {
             double min,
             double max,
             double percentage) {
-        requireFiniteNonNegative(percentage, "percentage");
-        if (group == null || group.isEmpty()) {
-            return max > min ? max : min;
-        }
-        if (max > min) {
-            return percentage * (max - min) + min;
-        }
-        if (max < min) {
-            return (1.0d - percentage) * (min - max) + max;
-        }
-        return max;
+        return swg.crafting.simulator.scenario.Interpolation.interpolate(
+                group, min, max, percentage);
     }
 
     private double calculatePropertyScore(

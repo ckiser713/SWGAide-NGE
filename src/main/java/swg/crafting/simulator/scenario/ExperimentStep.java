@@ -1,4 +1,4 @@
-package swg.infinity.engine;
+package swg.crafting.simulator.scenario;
 
 /** One deterministic experimentation action in a craft scenario. */
 public final class ExperimentStep {

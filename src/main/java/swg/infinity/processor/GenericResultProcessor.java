@@ -3,7 +3,7 @@ package swg.infinity.processor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import swg.infinity.engine.AttributeState;
+import swg.crafting.simulator.scenario.AttributeState;
 import swg.infinity.engine.CraftState;
 
 /** Generic diagnostic processor exposing current crafting attributes verbatim. */

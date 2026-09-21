@@ -8,7 +8,7 @@ import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.LaboratoryType;
 import swg.crafting.simulator.contracts.Provenance;
 import swg.infinity.contracts.SchematicDefinition;
-import swg.infinity.engine.CraftResult;
+import swg.crafting.simulator.scenario.CraftResult;
 import swg.infinity.engine.CraftState;
 import swg.infinity.processor.FunctionalItemResult;
 

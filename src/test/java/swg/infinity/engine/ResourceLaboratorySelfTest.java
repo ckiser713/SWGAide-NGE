@@ -1,4 +1,6 @@
 package swg.infinity.engine;
+import swg.crafting.simulator.scenario.CraftOutcomeTier;
+import swg.crafting.simulator.scenario.AttributeState;
 
 import java.util.Arrays;
 import java.util.Collections;

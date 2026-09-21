@@ -1,4 +1,8 @@
 package swg.infinity.engine;
+import swg.crafting.simulator.scenario.ExperimentStep;
+import swg.crafting.simulator.scenario.CraftScenario;
+import swg.crafting.simulator.scenario.CraftResult;
+import swg.crafting.simulator.scenario.CraftOutcomeTier;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -5,7 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import swg.infinity.engine.CraftResult;
+import swg.crafting.simulator.scenario.CraftResult;
 import swg.infinity.processor.FunctionalItemResult;
 
 /** Deterministic final-item comparison; no separate scoring formula exists. */

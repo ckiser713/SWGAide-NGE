@@ -1,4 +1,7 @@
 package swg.infinity.engine;
+import swg.crafting.simulator.scenario.ExperimentStep;
+import swg.crafting.simulator.scenario.CraftScenario;
+import swg.crafting.simulator.scenario.CraftResult;
 
 import swg.infinity.component.ComponentCombiner;
 import swg.infinity.processor.FunctionalItemResult;

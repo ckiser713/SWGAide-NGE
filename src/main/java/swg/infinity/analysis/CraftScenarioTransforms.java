@@ -3,7 +3,7 @@ package swg.infinity.analysis;
 import java.util.ArrayList;
 import java.util.List;
 
-import swg.infinity.engine.CraftScenario;
+import swg.crafting.simulator.scenario.CraftScenario;
 import swg.infinity.engine.ResourceInput;
 import swg.infinity.engine.ResourceSlotAssignment;
 

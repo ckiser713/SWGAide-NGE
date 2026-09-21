@@ -1,4 +1,4 @@
-package swg.infinity.engine;
+package swg.crafting.simulator.scenario;
 
 /**
  * Forced assembly/experimentation result tiers used by deterministic mode.

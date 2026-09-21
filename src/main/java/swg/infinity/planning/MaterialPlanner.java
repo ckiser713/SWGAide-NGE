@@ -8,7 +8,7 @@ import swg.infinity.component.ComponentSlotAssignment;
 import swg.infinity.component.ComponentUse;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.SlotKind;
-import swg.infinity.engine.CraftScenario;
+import swg.crafting.simulator.scenario.CraftScenario;
 import swg.infinity.engine.ResourceInput;
 import swg.infinity.engine.ResourceSlotAssignment;
 

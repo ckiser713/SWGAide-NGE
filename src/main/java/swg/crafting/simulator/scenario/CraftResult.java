@@ -1,4 +1,5 @@
-package swg.infinity.engine;
+package swg.crafting.simulator.scenario;
+import swg.infinity.engine.CraftState;
 
 import swg.infinity.processor.FunctionalItemResult;
 

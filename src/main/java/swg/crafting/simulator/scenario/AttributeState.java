@@ -1,4 +1,4 @@
-package swg.infinity.engine;
+package swg.crafting.simulator.scenario;
 
 import swg.infinity.contracts.ExperimentalProperty;
 
@@ -72,7 +72,7 @@ public final class AttributeState {
                 weightedScore,
                 maxPercentage,
                 bounded,
-                ResourceLaboratory.interpolate(
+                Interpolation.interpolate(
                         property.getGroup(), minValue, maxValue, bounded),
                 minValue,
                 maxValue);
@@ -138,7 +138,7 @@ public final class AttributeState {
                 weightedScore,
                 maxPercentage,
                 currentPercentage,
-                ResourceLaboratory.interpolate(
+                Interpolation.interpolate(
                         property.getGroup(), minValue, maxValue, currentPercentage),
                 minValue,
                 maxValue);

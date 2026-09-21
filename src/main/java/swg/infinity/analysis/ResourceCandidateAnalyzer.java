@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import swg.infinity.contracts.InfinityRuleset;
-import swg.infinity.engine.CraftResult;
-import swg.infinity.engine.CraftScenario;
+import swg.crafting.simulator.scenario.CraftResult;
+import swg.crafting.simulator.scenario.CraftScenario;
 import swg.infinity.engine.InfinityCraftService;
 import swg.infinity.engine.ResourceInput;
 import swg.infinity.engine.UnsupportedInfinityRuleException;

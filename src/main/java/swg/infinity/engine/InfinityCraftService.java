@@ -1,4 +1,6 @@
 package swg.infinity.engine;
+import swg.crafting.simulator.scenario.CraftScenario;
+import swg.crafting.simulator.scenario.CraftResult;
 
 import swg.crafting.simulator.contracts.CoverageRecord;
 import swg.crafting.simulator.contracts.EvidenceState;
