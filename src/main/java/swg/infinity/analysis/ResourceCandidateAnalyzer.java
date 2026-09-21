@@ -1,4 +1,6 @@
 package swg.infinity.analysis;
+import swg.crafting.simulator.explain.CraftScenarioTransforms;
+import swg.crafting.simulator.compare.CraftComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;

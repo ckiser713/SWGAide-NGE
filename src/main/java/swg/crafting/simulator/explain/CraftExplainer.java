@@ -1,4 +1,4 @@
-package swg.infinity.analysis;
+package swg.crafting.simulator.explain;
 
 import java.util.ArrayList;
 import java.util.HashMap;

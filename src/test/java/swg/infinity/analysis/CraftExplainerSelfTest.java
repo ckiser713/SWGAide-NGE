@@ -1,4 +1,7 @@
 package swg.infinity.analysis;
+import swg.crafting.simulator.explain.AttributeExplanation;
+import swg.crafting.simulator.explain.WeightedStatExplanation;
+import swg.crafting.simulator.explain.CraftExplainer;
 
 import java.util.Arrays;
 import java.util.Collections;

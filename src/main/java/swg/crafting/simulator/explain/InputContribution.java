@@ -1,4 +1,4 @@
-package swg.infinity.analysis;
+package swg.crafting.simulator.explain;
 
 /** One input's normalized contribution to an experimental weighted-stat score. */
 public final class InputContribution {

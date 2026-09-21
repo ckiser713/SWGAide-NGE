@@ -1,4 +1,4 @@
-package swg.infinity.analysis;
+package swg.crafting.simulator.compare;
 
 /** One functional statistic delta between two completed craft results. */
 public final class ResultDelta {

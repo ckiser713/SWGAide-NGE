@@ -1,4 +1,5 @@
 package swg.infinity.analysis;
+import swg.crafting.simulator.compare.CraftComparison;
 
 import swg.crafting.simulator.scenario.CraftResult;
 import swg.infinity.engine.ResourceInput;

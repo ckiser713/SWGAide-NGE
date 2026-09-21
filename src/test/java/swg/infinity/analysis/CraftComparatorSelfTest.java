@@ -1,4 +1,7 @@
 package swg.infinity.analysis;
+import swg.crafting.simulator.compare.ResultDelta;
+import swg.crafting.simulator.compare.CraftComparison;
+import swg.crafting.simulator.compare.CraftComparator;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
