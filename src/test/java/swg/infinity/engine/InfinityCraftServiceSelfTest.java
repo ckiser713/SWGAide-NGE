@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import swg.infinity.contracts.CombineType;
-import swg.infinity.contracts.CoverageRecord;
-import swg.infinity.contracts.EvidenceState;
+import swg.crafting.simulator.contracts.CoverageRecord;
+import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.InfinityRuleset;
 import swg.infinity.contracts.LaboratoryType;
-import swg.infinity.contracts.Provenance;
-import swg.infinity.contracts.RulesetManifest;
+import swg.crafting.simulator.contracts.Provenance;
+import swg.crafting.simulator.contracts.RulesetManifest;
 import swg.infinity.contracts.SchematicDefinition;
 
 /** Dependency-free fail-closed execution-gate tests. */

@@ -1,7 +1,7 @@
 package swg.infinity.rules;
 
 import swg.infinity.contracts.InfinityRuleset;
-import swg.infinity.contracts.RulesetValidator;
+import swg.crafting.simulator.contracts.RulesetValidator;
 
 /**
  * Explicit admission gate for a normalized in-memory ruleset.

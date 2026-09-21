@@ -3,7 +3,7 @@ package swg.infinity.rules;
 import java.util.Collections;
 
 import swg.infinity.contracts.InfinityRuleset;
-import swg.infinity.contracts.RulesetManifest;
+import swg.crafting.simulator.contracts.RulesetManifest;
 
 /** Dependency-free immutable-version catalog tests. */
 public final class RulesetCatalogSelfTest {

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import swg.infinity.contracts.Provenance;
+import swg.crafting.simulator.contracts.Provenance;
 
 /**
  * Extracted loot-generation configuration. This is data only; the complex

@@ -1,4 +1,4 @@
-package swg.infinity.contracts;
+package swg.crafting.simulator.contracts;
 
 /**
  * Evidence state for an Infinity crafting result or coverage path.

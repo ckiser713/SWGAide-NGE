@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import swg.infinity.contracts.EvidenceState;
+import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.LaboratoryType;
-import swg.infinity.contracts.Provenance;
+import swg.crafting.simulator.contracts.Provenance;
 import swg.infinity.contracts.SchematicDefinition;
 import swg.infinity.engine.CraftResult;
 import swg.infinity.engine.CraftState;

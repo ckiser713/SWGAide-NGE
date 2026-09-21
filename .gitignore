@@ -36,3 +36,6 @@ SWGAide-Unity.jar
 SWGAide-Unity.exe
 *.class
 
+
+# Maven build output
+/target/

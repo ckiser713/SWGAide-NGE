@@ -1,4 +1,4 @@
-package swg.infinity.contracts;
+package swg.crafting.simulator.contracts;
 
 import java.util.ArrayList;
 import java.util.Collections;

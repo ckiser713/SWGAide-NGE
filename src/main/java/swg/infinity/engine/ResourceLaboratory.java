@@ -8,7 +8,7 @@ import java.util.Map;
 
 import swg.infinity.component.ComponentInstance;
 import swg.infinity.component.ComponentSlotAssignment;
-import swg.infinity.contracts.EvidenceState;
+import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.LaboratoryType;

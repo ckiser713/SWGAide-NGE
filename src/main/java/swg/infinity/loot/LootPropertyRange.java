@@ -1,6 +1,6 @@
 package swg.infinity.loot;
 
-import swg.infinity.contracts.Provenance;
+import swg.crafting.simulator.contracts.Provenance;
 
 /** Source-derived range for one loot/component attribute. */
 public final class LootPropertyRange {

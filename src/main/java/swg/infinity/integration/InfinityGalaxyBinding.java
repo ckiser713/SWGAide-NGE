@@ -1,6 +1,6 @@
 package swg.infinity.integration;
 
-import swg.infinity.contracts.RulesetManifest;
+import swg.crafting.simulator.contracts.RulesetManifest;
 import swg.model.SWGCGalaxy;
 
 /** Central feature gate for the SWGAide SWG Infinity server identity. */

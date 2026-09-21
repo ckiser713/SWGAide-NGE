@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import swg.infinity.contracts.Provenance;
+import swg.crafting.simulator.contracts.Provenance;
 
 /** Normalized source definition for one Infinity loot component template. */
 public final class LootTemplateDefinition {

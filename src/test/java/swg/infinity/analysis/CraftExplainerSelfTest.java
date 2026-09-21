@@ -11,7 +11,7 @@ import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.LaboratoryType;
 import swg.infinity.contracts.PropertyWeight;
-import swg.infinity.contracts.Provenance;
+import swg.crafting.simulator.contracts.Provenance;
 import swg.infinity.contracts.ResourceStat;
 import swg.infinity.contracts.SchematicDefinition;
 import swg.infinity.contracts.SlotKind;

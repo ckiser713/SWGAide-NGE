@@ -1,4 +1,6 @@
 package swg.infinity.contracts;
+import swg.crafting.simulator.contracts.CoverageRecord;
+import swg.crafting.simulator.contracts.RulesetManifest;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,9 +1,9 @@
 package swg.infinity.engine;
 
-import swg.infinity.contracts.CoverageRecord;
-import swg.infinity.contracts.EvidenceState;
+import swg.crafting.simulator.contracts.CoverageRecord;
+import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.InfinityRuleset;
-import swg.infinity.contracts.RulesetValidator;
+import swg.crafting.simulator.contracts.RulesetValidator;
 import swg.infinity.contracts.SchematicDefinition;
 
 /**

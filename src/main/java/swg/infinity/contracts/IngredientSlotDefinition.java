@@ -1,4 +1,5 @@
 package swg.infinity.contracts;
+import swg.crafting.simulator.contracts.Provenance;
 
 /** Effective ingredient-slot contract extracted from an Infinity draft schematic. */
 public final class IngredientSlotDefinition {

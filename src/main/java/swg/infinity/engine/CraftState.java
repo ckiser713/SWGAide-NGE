@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import swg.infinity.contracts.EvidenceState;
+import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.SchematicDefinition;
 
 /** Immutable deterministic state of one craft calculation. */

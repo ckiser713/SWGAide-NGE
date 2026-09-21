@@ -1,6 +1,6 @@
 package swg.infinity.component;
 
-import swg.infinity.contracts.Provenance;
+import swg.crafting.simulator.contracts.Provenance;
 
 /** One ordered attribute exposed by a crafted or looted component. */
 public final class ComponentProperty {
