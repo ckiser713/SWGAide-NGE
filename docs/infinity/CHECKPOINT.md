@@ -326,12 +326,24 @@ T5 commits:
       1e-4, weighted scores 1e-6, attributes 1e-2 — never widened)
 - The four source-pinned weapon seeds (`pistol_blaster_dl44`,
   `pistol_blaster_scout_trooper`, `carbine_geo`, `rifle_berserker`)
-  all reproduce from the extractor with full structural parity:
-  `WeaponVerticalParitySelfTest PASS (4/4)`.
-- `docs/infinity/ACCEPTANCE_MATRIX.md`: rows for `weapon final
-  processor` and `weapon vertical parity` flipped from
-  `implemented in Infinity module` to `EXACT vertical complete`,
-  keyed to the new self-test as evidence.
+  all reproduce from the extractor with **structural** parity:
+  `WeaponVerticalParitySelfTest PASS (4/4)` validates slot count,
+  target template, assembly/experimenting skills, slot kinds,
+  quantities, accepted resource types, and contributions within the
+  project tolerance window.
+- This is **structural parity only**. The Infinity source `.lua`
+  files do not encode experimental target-template data, weights,
+  min/max, precision, combine types, component effects, or final
+  weapon output fields — those live in compiled `.iff` resources
+  outside the pinned source checkout. The `CoverageRecord` entries
+  emitted by the extractor correctly mark
+  `laboratory / components / processor` coverage as
+  `UNSUPPORTED` for the weapons. Until those data are extracted and
+  parity-tested, the weapon vertical is classified
+  **STRUCTURAL_PARITY_PASS / FUNCTIONAL_PARITY_PENDING** in
+  `docs/infinity/ACCEPTANCE_MATRIX.md`. Restoring `EXACT vertical
+  complete` requires an additional self-test that exercises real
+  engine output against source-derived expected fixtures.
 - Foundation suite now runs 24 self-tests, all PASS.
 
 T6 commits:

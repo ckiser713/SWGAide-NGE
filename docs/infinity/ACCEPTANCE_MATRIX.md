@@ -28,8 +28,8 @@
 | generic component combine path | implemented | fixture per combine type |
 | recursive crafted component conversion | implemented | nested craft fixture |
 | generic compare/explain/planning | implemented | compile/self-tests |
-| weapon final processor | EXACT vertical complete | WeaponVerticalParitySelfTest 4/4 |
-| weapon vertical parity | EXACT vertical complete | source-pinned seeds + extractor |
+| weapon final processor | STRUCTURAL_PARITY_PASS / FUNCTIONAL_PARITY_PENDING | WeaponVerticalParitySelfTest 4/4 (slots/skill/template) + output-fixture self-test (T6 functional) |
+| weapon vertical parity | STRUCTURAL_PARITY_PASS / FUNCTIONAL_PARITY_PENDING | source-pinned seeds + extractor; experimental target-template data, weights, min/max, precision, combine types, component effects, and final weapon fields still pending source extraction |
 | RNG probability model | not implemented | System::random semantics + parity |
 | Genetic Laboratory | not implemented | source/fixture pass |
 | Droid Laboratory | not implemented | source/fixture pass |
