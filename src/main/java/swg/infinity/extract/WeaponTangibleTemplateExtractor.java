@@ -127,10 +127,8 @@ public final class WeaponTangibleTemplateExtractor {
                 relativize(file));
 
         // Walk groups (numberExperimentalProperties[i] rows per group).
-        // experimentalProperties and experimentalWeights are flat across
-        // all rows. experimentalGroupTitles, experimentalSubGroupTitles,
-        // experimentalMin, experimentalMax, experimentalPrecision, and
-        // experimentalCombineType are per-group.
+        // experimentalProperties/experimentalWeights are flat across rows;
+        // min/max/precision/combine type are per group.
         int groupCount = Math.min(
                 Math.min(groups.size(), subs.size()), counts.size());
         List<ExperimentalProperty> experimental =
@@ -145,51 +143,75 @@ public final class WeaponTangibleTemplateExtractor {
                 flatCursor += rows;
                 continue;
             }
-            // min/max/prec/combineType are per-group, indexed by g.
+
             double minVal = numAt(mins, g);
             double maxVal = numAt(maxs, g);
             int prec = (int) numAt(precs, g);
             int combine = (int) numAt(combineTypes, g);
 
-            List<PropertyWeight> pws = new ArrayList<PropertyWeight>();
-            boolean isResource = (combine != 0);
+            CombineType ct;
+            try {
+                ct = CombineType.fromSourceId(combine);
+            } catch (IllegalArgumentException badCombine) {
+                throw new LuaTemplateStubLoader.LuaSyntaxException(
+                        "unknown experimentalCombineType " + combine
+                        + " in " + file.getPath());
+            }
+
+            List<ResourceStat> statsForGroup =
+                    new ArrayList<ResourceStat>();
+            List<Integer> rawWeights =
+                    new ArrayList<Integer>();
+            int rawTotal = 0;
+
             for (int r = 0; r < rows; ++r) {
                 int idx = flatCursor + r;
                 String statCode = strAt(props, idx);
                 if (statCode == null || "XX".equals(statCode)) continue;
+
                 ResourceStat stat;
                 try {
                     stat = ResourceStat.valueOf(statCode);
-                } catch (IllegalArgumentException iae) {
-                    continue;
+                } catch (IllegalArgumentException unknownStat) {
+                    throw new LuaTemplateStubLoader.LuaSyntaxException(
+                            "unknown resource stat " + statCode
+                            + " in " + file.getPath());
                 }
-                double rawW = numAt(weights, idx);
-                if (!isResource) {
-                    // LIMITED/non-resource: emit one zero-weight marker
-                    // so the property list is structurally consistent;
-                    // the engine ignores zero-weight stats.
-                    pws.add(new PropertyWeight(stat, 1, 0.0d));
-                } else {
-                    // Per-row weight in the source is always 1, so the
-                    // natural normalization is 1/rowsForGroup. Emit each
-                    // row as its own weight; the engine sums across all
-                    // weights for the same attribute.
-                    double norm = rows == 0 ? rawW : rawW / (double) rows;
-                    pws.add(new PropertyWeight(stat, 1, norm));
+
+                int raw = (int) Math.round(numAt(weights, idx));
+                if (raw <= 0) {
+                    throw new LuaTemplateStubLoader.LuaSyntaxException(
+                            "non-positive experimental weight " + raw
+                            + " for " + statCode + " in " + file.getPath());
+                }
+                statsForGroup.add(stat);
+                rawWeights.add(Integer.valueOf(raw));
+                rawTotal += raw;
+            }
+
+            List<PropertyWeight> pws = new ArrayList<PropertyWeight>();
+            if (rawTotal > 0) {
+                for (int i = 0; i < statsForGroup.size(); ++i) {
+                    int raw = rawWeights.get(i).intValue();
+                    pws.add(new PropertyWeight(
+                            statsForGroup.get(i),
+                            raw,
+                            (double) raw / (double) rawTotal));
                 }
             }
-            if (pws.isEmpty()) {
-                flatCursor += rows;
-                continue;
+
+            // Some fixed/baseline groups have no resource weights and are
+            // represented separately in baselineFields.
+            if (!pws.isEmpty()) {
+                String attribute = normalizeAttributeName(sub);
+                experimental.add(new ExperimentalProperty(
+                        attribute,
+                        group == null ? "" : group,
+                        minVal, maxVal, prec, false,
+                        ct,
+                        Collections.unmodifiableList(pws),
+                        prov));
             }
-            CombineType ct = isResource
-                    ? CombineType.RESOURCE : CombineType.LIMITED;
-            String attribute = normalizeAttributeName(sub);
-            experimental.add(new ExperimentalProperty(
-                    attribute,
-                    group == null ? "" : group,
-                    minVal, maxVal, prec, false,
-                    ct, Collections.unmodifiableList(pws), prov));
             flatCursor += rows;
         }
 

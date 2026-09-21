@@ -15,6 +15,7 @@ import swg.infinity.engine.InfinityCraftServiceSelfTest;
 import swg.infinity.engine.ResourceLaboratorySelfTest;
 import swg.infinity.extract.ExtractionReportSelfTest;
 import swg.infinity.extract.ExtractorSelfTest;
+import swg.infinity.extract.InfinityWeaponRulesetComposerSelfTest;
 import swg.infinity.extract.WeaponFunctionalParitySelfTest;
 import swg.infinity.fixtures.SeedFixtureParseSelfTest;
 import swg.infinity.fixtures.WeaponVerticalParitySelfTest;
@@ -58,6 +59,7 @@ public final class FoundationSelfTestSuite {
         CraftingSkillMathSelfTest.main(args);
         ExtractionReportSelfTest.main(args);
         ExtractorSelfTest.main(args);
+        InfinityWeaponRulesetComposerSelfTest.main(args);
         SeedFixtureParseSelfTest.main(args);
         WeaponVerticalParitySelfTest.main(args);
         WeaponFunctionalParitySelfTest.main(args);
