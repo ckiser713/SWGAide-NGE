@@ -1,4 +1,4 @@
-package swg.infinity.component;
+package swg.crafting.simulator.components;
 
 /** Number of uses consumed from one component instance in a schematic slot. */
 public final class ComponentUse {

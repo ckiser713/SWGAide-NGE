@@ -9,10 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import swg.infinity.component.ComponentInstance;
+import swg.crafting.simulator.components.ComponentInstance;
 import swg.infinity.component.ComponentOrigin;
 import swg.infinity.component.ComponentSlotAssignment;
-import swg.infinity.component.ComponentUse;
+import swg.crafting.simulator.components.ComponentUse;
 import swg.infinity.contracts.CombineType;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;

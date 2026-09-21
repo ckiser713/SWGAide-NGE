@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import swg.infinity.component.ComponentInstance;
+import swg.crafting.simulator.components.ComponentInstance;
 import swg.infinity.component.ComponentSlotAssignment;
 import swg.infinity.contracts.ExperimentalProperty;
 import swg.infinity.contracts.IngredientSlotDefinition;

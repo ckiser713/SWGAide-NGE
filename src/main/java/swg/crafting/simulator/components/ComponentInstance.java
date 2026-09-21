@@ -1,4 +1,5 @@
-package swg.infinity.component;
+package swg.crafting.simulator.components;
+import swg.infinity.component.ComponentOrigin;
 
 import java.util.ArrayList;
 import java.util.Collections;

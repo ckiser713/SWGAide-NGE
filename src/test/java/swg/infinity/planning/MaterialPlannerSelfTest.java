@@ -6,10 +6,10 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import swg.infinity.component.ComponentInstance;
+import swg.crafting.simulator.components.ComponentInstance;
 import swg.infinity.component.ComponentOrigin;
 import swg.infinity.component.ComponentSlotAssignment;
-import swg.infinity.component.ComponentUse;
+import swg.crafting.simulator.components.ComponentUse;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.LaboratoryType;
 import swg.crafting.simulator.contracts.Provenance;

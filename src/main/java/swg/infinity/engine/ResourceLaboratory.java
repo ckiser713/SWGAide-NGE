@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import swg.infinity.component.ComponentInstance;
+import swg.crafting.simulator.components.ComponentInstance;
 import swg.infinity.component.ComponentSlotAssignment;
 import swg.crafting.simulator.contracts.EvidenceState;
 import swg.infinity.contracts.ExperimentalProperty;

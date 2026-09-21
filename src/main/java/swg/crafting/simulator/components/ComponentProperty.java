@@ -1,4 +1,4 @@
-package swg.infinity.component;
+package swg.crafting.simulator.components;
 
 import swg.crafting.simulator.contracts.Provenance;
 
