@@ -20,6 +20,7 @@ import swg.infinity.extract.WeaponFunctionalParitySelfTest;
 import swg.infinity.fixtures.SeedFixtureParseSelfTest;
 import swg.infinity.fixtures.WeaponVerticalParitySelfTest;
 import swg.infinity.integration.BindingClassificationSelfTest;
+import swg.infinity.integration.LiveBindingSignatureSelfTest;
 import swg.infinity.integration.BindingsSeedWriterSelfTest;
 import swg.infinity.integration.SchematicBindingRegistrySelfTest;
 import swg.infinity.planning.MaterialPlannerSelfTest;
@@ -48,6 +49,7 @@ public final class FoundationSelfTestSuite {
         CraftedComponentFactorySelfTest.main(args);
         SchematicBindingRegistrySelfTest.main(args);
         BindingClassificationSelfTest.main(args);
+        LiveBindingSignatureSelfTest.main(args);
         BindingsSeedWriterSelfTest.main(args);
         InfinityCraftEngineSelfTest.main(args);
         InfinityCraftServiceSelfTest.main(args);
