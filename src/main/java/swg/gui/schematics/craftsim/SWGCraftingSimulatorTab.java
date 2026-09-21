@@ -91,9 +91,15 @@ public final class SWGCraftingSimulatorTab extends JPanel {
             resourceSelectors =
                     new LinkedHashMap<Integer, JComboBox<
                             swg.crafting.simulator.resources.ResourceSnapshot>>();
-    private final JTextField exoticComponentField = new JTextField(20);
+    private final JComboBox<ComponentSlotChoice> exactComponentSlot =
+            new JComboBox<ComponentSlotChoice>();
+    private final JTextField exoticComponentField = new JTextField(18);
+    private final JTextField exoticSerialField = new JTextField(10);
+    private final JSpinner exoticUsesSpinner = new JSpinner(
+            new SpinnerNumberModel(1, 1, 100, 1));
+    private final JTextField exoticPropertiesField = new JTextField(34);
     private final JSpinner recursionDepthSpinner = new JSpinner(
-            new SpinnerNumberModel(1, 1, 8, 1));
+            new SpinnerNumberModel(1, 1, 32, 1));
     private final JComboBox<String> experimentGroupBox =
             new JComboBox<String>();
     private final JSpinner experimentPointsSpinner = new JSpinner(
@@ -234,9 +240,19 @@ public final class SWGCraftingSimulatorTab extends JPanel {
                 BorderLayout.CENTER);
 
         JPanel components = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        components.add(new JLabel("Exotic component (name):"));
+        components.add(new JLabel("Exact component slot:"));
+        components.add(exactComponentSlot);
+        components.add(new JLabel("  Name/ID:"));
         components.add(exoticComponentField);
-        components.add(new JLabel("  Recursion depth:"));
+        components.add(new JLabel("  Serial:"));
+        components.add(exoticSerialField);
+        components.add(new JLabel("  Uses available:"));
+        components.add(exoticUsesSpinner);
+        components.add(new JLabel("  Properties:"));
+        exoticPropertiesField.setToolTipText(
+                "Comma separated, e.g. mindamage=43,maxdamage=171,attackspeed=-0.8");
+        components.add(exoticPropertiesField);
+        components.add(new JLabel("  Recursion safety depth:"));
         components.add(recursionDepthSpinner);
 
         JPanel experiment = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -459,7 +475,34 @@ public final class SWGCraftingSimulatorTab extends JPanel {
             ingredientPanel.add(row);
         }
 
+        refreshExactComponentSlots(bound.definition);
         finishIngredientRefresh();
+    }
+
+    private void refreshExactComponentSlots(
+            swg.infinity.contracts.SchematicDefinition definition) {
+        Object previous = exactComponentSlot.getSelectedItem();
+        Integer previousIndex = previous instanceof ComponentSlotChoice
+                ? Integer.valueOf(((ComponentSlotChoice) previous).slotIndex)
+                : null;
+
+        exactComponentSlot.removeAllItems();
+        for (swg.infinity.contracts.IngredientSlotDefinition slot
+                : definition.getSlots()) {
+            if (slot.getKind() != null && slot.getKind().isComponent()) {
+                ComponentSlotChoice choice = new ComponentSlotChoice(
+                        slot.getIndex(),
+                        slot.getTitle(),
+                        slot.getAcceptedType(),
+                        slot.getQuantity(),
+                        slot.getKind().isOptional());
+                exactComponentSlot.addItem(choice);
+                if (previousIndex != null
+                        && previousIndex.intValue() == slot.getIndex()) {
+                    exactComponentSlot.setSelectedItem(choice);
+                }
+            }
+        }
     }
 
     private void finishIngredientRefresh() {
@@ -498,11 +541,9 @@ public final class SWGCraftingSimulatorTab extends JPanel {
             }
             List<swg.infinity.engine.ResourceSlotAssignment> resources =
                     gatherResources(bound.definition);
-            String exo = exoticComponentField.getText();
             int recursion = (Integer) recursionDepthSpinner.getValue();
             List<swg.infinity.component.ComponentSlotAssignment> components =
-                    SimEngineFacadeBridge.componentsFor(
-                            exo, recursion, bound.definition);
+                    gatherExactComponents(bound.definition, recursion);
             String group = (String) experimentGroupBox.getSelectedItem();
             int points = (Integer) experimentPointsSpinner.getValue();
             List<swg.crafting.simulator.scenario.ExperimentStep> steps =
@@ -582,6 +623,35 @@ public final class SWGCraftingSimulatorTab extends JPanel {
         return resolved.resources;
     }
 
+    private List<swg.infinity.component.ComponentSlotAssignment>
+            gatherExactComponents(
+                    swg.infinity.contracts.SchematicDefinition definition,
+                    int recursionDepth) {
+        ComponentSlotChoice choice =
+                (ComponentSlotChoice) exactComponentSlot.getSelectedItem();
+        String id = exoticComponentField.getText() == null
+                ? "" : exoticComponentField.getText().trim();
+        String properties = exoticPropertiesField.getText() == null
+                ? "" : exoticPropertiesField.getText().trim();
+
+        if (choice == null || id.isEmpty()) {
+            return Collections
+                    .<swg.infinity.component.ComponentSlotAssignment>emptyList();
+        }
+
+        swg.crafting.simulator.components.ExactComponentInput input =
+                new swg.crafting.simulator.components.ExactComponentInput(
+                        choice.slotIndex,
+                        id,
+                        exoticSerialField.getText(),
+                        ((Integer) exoticUsesSpinner.getValue()).intValue(),
+                        swg.crafting.simulator.components
+                            .ExactComponentPropertyParser.parse(properties));
+
+        return SimEngineFacadeBridge.componentsForExact(
+                input, recursionDepth, definition);
+    }
+
     private NativeResourceAdapter.Scope currentScope() {
         String s = (String) resourceScope.getSelectedItem();
         if (s == null) return NativeResourceAdapter.Scope.CURRENT_AND_RECENT;
@@ -632,5 +702,44 @@ public final class SWGCraftingSimulatorTab extends JPanel {
 
     static boolean _isInfinityGalaxy(SWGCGalaxy galaxy) {
         return InfinityGalaxyBinding.isInfinity(galaxy);
+    }
+
+    private static final class ComponentSlotChoice {
+        final int slotIndex;
+        final String title;
+        final String acceptedType;
+        final int quantity;
+        final boolean optional;
+
+        ComponentSlotChoice(
+                int slotIndex,
+                String title,
+                String acceptedType,
+                int quantity,
+                boolean optional) {
+            this.slotIndex = slotIndex;
+            this.title = title == null ? "" : title;
+            this.acceptedType = acceptedType == null ? "" : acceptedType;
+            this.quantity = quantity;
+            this.optional = optional;
+        }
+
+        @Override
+        public String toString() {
+            return "#" + slotIndex + " " + title
+                    + " x" + quantity
+                    + (optional ? " optional" : "");
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof ComponentSlotChoice
+                    && ((ComponentSlotChoice) other).slotIndex == slotIndex;
+        }
+
+        @Override
+        public int hashCode() {
+            return slotIndex;
+        }
     }
 }

@@ -7,61 +7,94 @@ import java.util.List;
 import swg.crafting.simulator.components.ComponentInstance;
 import swg.crafting.simulator.components.ComponentProperty;
 import swg.crafting.simulator.components.ComponentUse;
+import swg.crafting.simulator.components.ExactComponentInput;
 import swg.infinity.component.ComponentOrigin;
 import swg.infinity.component.ComponentSlotAssignment;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.SchematicDefinition;
-import swg.infinity.contracts.SlotKind;
 
 /**
- * Internal helper used by the Crafting Simulator tab to derive
- * {@link ComponentSlotAssignment} entries from the user-supplied
- * exotic component name and recursion depth. Lives in the same
- * package as {@link SWGCraftingSimulatorTab} so it can remain
- * package-private.
+ * Package-private component bridge for the native Crafting Simulator tab.
  */
 final class SimEngineFacadeBridge {
     private SimEngineFacadeBridge() {
     }
 
+    /**
+     * Builds one exact owned/manual component assignment for the explicitly
+     * selected component slot.
+     */
+    static List<ComponentSlotAssignment> componentsForExact(
+            ExactComponentInput input,
+            int recursionDepth,
+            SchematicDefinition bound) {
+        if (input == null || bound == null) {
+            return Collections.<ComponentSlotAssignment>emptyList();
+        }
+        if (recursionDepth < 1 || recursionDepth > 64) {
+            throw new IllegalArgumentException(
+                    "recursionDepth must be within [1,64]");
+        }
+
+        IngredientSlotDefinition target = null;
+        for (IngredientSlotDefinition slot : bound.getSlots()) {
+            if (slot.getIndex() == input.getSlotIndex()) {
+                target = slot;
+                break;
+            }
+        }
+        if (target == null || target.getKind() == null
+                || !target.getKind().isComponent()) {
+            throw new IllegalArgumentException(
+                    "slot " + input.getSlotIndex()
+                    + " is not a component slot");
+        }
+        if (input.getAvailableUses() < target.getQuantity()) {
+            throw new IllegalArgumentException(
+                    "component has " + input.getAvailableUses()
+                    + " uses but slot requires " + target.getQuantity());
+        }
+
+        ComponentInstance component = new ComponentInstance(
+                input.getComponentId(),
+                target.getAcceptedType(),
+                input.getSerial(),
+                input.getAvailableUses(),
+                ComponentOrigin.OWNED_LOOT,
+                input.getProperties());
+
+        ComponentUse use =
+                new ComponentUse(component, target.getQuantity());
+        return Collections.singletonList(
+                new ComponentSlotAssignment(
+                        target.getIndex(),
+                        Collections.singletonList(use)));
+    }
+
+    /**
+     * Legacy helper retained for source compatibility with earlier tests.
+     * New production UI code must use {@link #componentsForExact}.
+     */
     static List<ComponentSlotAssignment> componentsFor(
             String exoticName,
             int recursionDepth,
             SchematicDefinition bound) {
-        if (exoticName == null || exoticName.isEmpty() || bound == null) {
+        if (exoticName == null || exoticName.trim().isEmpty()
+                || bound == null) {
             return Collections.<ComponentSlotAssignment>emptyList();
         }
-        List<ComponentSlotAssignment> out =
-                new ArrayList<ComponentSlotAssignment>();
+
         for (IngredientSlotDefinition slot : bound.getSlots()) {
-            if (slot == null
-                    || slot.getKind() == null
-                    || !slot.getKind().isComponent()) {
-                continue;
-            }
-            // Build one synthetic exact/manual component per recursion
-            // depth. The serial is empty; the origin marks it MANUAL.
-            List<ComponentUse> uses = new ArrayList<ComponentUse>();
-            int n = Math.max(1, recursionDepth);
-            for (int i = 0; i < n; ++i) {
-                ComponentInstance ci = new ComponentInstance(
-                        exoticName + "-" + slot.getIndex() + "-r" + i,
-                        exoticName,
+            if (slot.getKind() != null && slot.getKind().isComponent()) {
+                ExactComponentInput input = new ExactComponentInput(
+                        slot.getIndex(),
+                        exoticName.trim(),
                         "",
-                        1,
-                        ComponentOrigin.MANUAL,
+                        Math.max(1, slot.getQuantity()),
                         Collections.<ComponentProperty>emptyList());
-                uses.add(new ComponentUse(ci, 1));
+                return componentsForExact(input, recursionDepth, bound);
             }
-            out.add(new ComponentSlotAssignment(
-                    slot.getIndex(),
-                    Collections.unmodifiableList(uses)));
         }
-        // Optional: collapse to one assignment per slot to keep the
-        // engine call deterministic; if the slot is component-kind but
-        // we have no exotic name we leave it empty.
-        return out.isEmpty()
-                ? Collections.<ComponentSlotAssignment>emptyList()
-                : Collections.unmodifiableList(out);
+        return Collections.<ComponentSlotAssignment>emptyList();
     }
 }

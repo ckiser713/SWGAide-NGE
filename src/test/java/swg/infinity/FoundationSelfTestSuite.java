@@ -5,6 +5,7 @@ import swg.crafting.simulator.resources.ResourceSnapshotSelfTest;
 import swg.crafting.simulator.resources.ResourceCandidateMatcherSelfTest;
 import swg.crafting.simulator.ServerSimulationContextSelfTest;
 import swg.crafting.simulator.components.RecursiveCraftCycleSelfTest;
+import swg.crafting.simulator.components.ExactComponentInputSelfTest;
 import swg.crafting.simulator.rules.ServerRulesRegistrySelfTest;
 import swg.infinity.analysis.CraftComparatorSelfTest;
 import swg.infinity.analysis.CraftExplainerSelfTest;
@@ -45,6 +46,7 @@ public final class FoundationSelfTestSuite {
         ResourceSnapshotSelfTest.main(args);
         ResourceCandidateMatcherSelfTest.main(args);
         RecursiveCraftCycleSelfTest.main(args);
+        ExactComponentInputSelfTest.main(args);
         ServerRulesRegistrySelfTest.main(args);
         ServerSimulationContextSelfTest.main(args);
         ResourceLaboratorySelfTest.main(args);
