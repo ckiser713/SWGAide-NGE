@@ -1,4 +1,6 @@
-package swg.infinity.crafter;
+package swg.crafting.simulator.crafter;
+
+import swg.infinity.crafter.CrafterProfile;
 
 /**
  * Deterministic pre-RNG arithmetic copied by behavior from the pinned Infinity

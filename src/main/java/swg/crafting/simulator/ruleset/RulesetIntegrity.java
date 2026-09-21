@@ -1,4 +1,4 @@
-package swg.infinity.rules;
+package swg.crafting.simulator.ruleset;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

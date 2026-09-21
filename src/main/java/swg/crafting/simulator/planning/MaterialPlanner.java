@@ -1,4 +1,4 @@
-package swg.infinity.planning;
+package swg.crafting.simulator.planning;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

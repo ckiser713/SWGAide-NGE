@@ -1,4 +1,4 @@
-package swg.infinity.rules;
+package swg.crafting.simulator.ruleset;
 
 import java.util.ArrayList;
 import java.util.Collections;

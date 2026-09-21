@@ -13,6 +13,8 @@ import swg.crafting.simulator.components.ComponentUse;
 import swg.infinity.contracts.IngredientSlotDefinition;
 import swg.infinity.contracts.LaboratoryType;
 import swg.crafting.simulator.contracts.Provenance;
+import swg.crafting.simulator.planning.MaterialPlan;
+import swg.crafting.simulator.planning.MaterialPlanner;
 import swg.infinity.contracts.ResourceStat;
 import swg.infinity.contracts.SchematicDefinition;
 import swg.infinity.contracts.SlotKind;

@@ -1,5 +1,7 @@
 package swg.infinity.rules;
 
+import swg.crafting.simulator.ruleset.RulesetIntegrity;
+
 /** Dependency-free ruleset hash utility tests. */
 public final class RulesetIntegritySelfTest {
     private RulesetIntegritySelfTest() {

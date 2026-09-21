@@ -4,6 +4,8 @@ import java.util.Collections;
 
 import swg.infinity.contracts.InfinityRuleset;
 import swg.crafting.simulator.contracts.RulesetManifest;
+import swg.crafting.simulator.ruleset.ActiveRuleset;
+import swg.crafting.simulator.ruleset.RulesetCatalog;
 
 /** Dependency-free immutable-version catalog tests. */
 public final class RulesetCatalogSelfTest {

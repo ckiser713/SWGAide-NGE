@@ -1,5 +1,7 @@
 package swg.infinity.crafter;
 
+import swg.crafting.simulator.crafter.CraftingSkillMath;
+
 /** Dependency-free source-derived pre-RNG skill arithmetic tests. */
 public final class CraftingSkillMathSelfTest {
     private CraftingSkillMathSelfTest() {
