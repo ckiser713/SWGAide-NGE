@@ -338,6 +338,7 @@ public final class SWGSchematicTab extends JTabbedPane {
         if (isGuiFinished) {
             draftSchems.focusGained(); // always
             laboratory.focusGained();
+            craftingSimulator.focusGained();
             todaysAlert.focusGained();
             resClassUse.focusGained();
             tintTabs(false);

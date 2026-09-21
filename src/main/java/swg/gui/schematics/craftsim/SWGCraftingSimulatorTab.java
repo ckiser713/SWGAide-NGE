@@ -39,6 +39,8 @@ import swg.gui.SWGFrame;
 import swg.gui.schematics.SWGSchematicTab;
 import swg.infinity.contracts.InfinityRuleset;
 import swg.infinity.integration.InfinityGalaxyBinding;
+import swg.infinity.integration.InfinityLiveBindingFactory;
+import swg.infinity.runtime.InfinityRuntimeBootstrap;
 import swg.infinity.integration.SchematicBinding;
 import swg.infinity.integration.SchematicBindingRegistry;
 import swg.model.SWGCGalaxy;
@@ -109,6 +111,8 @@ public final class SWGCraftingSimulatorTab extends JPanel {
     private SWGSchematic selectedSchematic;
     private InfinityRuleset activeRuleset;
     private SchematicBindingRegistry activeRegistry;
+    private String activeProviderId = "(none)";
+    private String runtimeStatus = "rules context not loaded";
     private SimEngineFacade.BoundSchematic lastBound;
     private swg.crafting.simulator.scenario.CraftScenario lastScenario;
 
@@ -118,7 +122,7 @@ public final class SWGCraftingSimulatorTab extends JPanel {
         add(buildBanner(), BorderLayout.NORTH);
         add(buildCenter(), BorderLayout.CENTER);
         add(buildRunBar(), BorderLayout.SOUTH);
-        refreshBanner();
+        focusGained();
     }
 
     /**
@@ -131,7 +135,58 @@ public final class SWGCraftingSimulatorTab extends JPanel {
             InfinityRuleset ruleset, SchematicBindingRegistry registry) {
         this.activeRuleset = ruleset;
         this.activeRegistry = registry;
-        refreshBanner();
+        this.activeProviderId =
+                swg.crafting.simulator.server.infinity
+                    .InfinityServerRulesProvider.PROVIDER_ID;
+        this.runtimeStatus = "verified rules loaded";
+        refreshAll();
+    }
+
+    /**
+     * Refreshes the runtime module for the currently selected galaxy.
+     *
+     * <p>Infinity loads a packaged effective ruleset and builds live bindings
+     * against real SWGAide schematic IDs. Other servers remain resource-only
+     * until a verified server module is registered.</p>
+     */
+    public void focusGained() {
+        SWGCGalaxy galaxy = SWGFrame.getSelectedGalaxy();
+        if (galaxy == null) {
+            clearRulesContext("no galaxy selected");
+            return;
+        }
+        if (!InfinityGalaxyBinding.isInfinity(galaxy)) {
+            clearRulesContext(
+                    "resource-only: no verified crafting module for server "
+                    + galaxy.id());
+            return;
+        }
+
+        try {
+            InfinityRuleset ruleset = InfinityRuntimeBootstrap.loadBundled();
+            if (ruleset == null) {
+                clearRulesContext(
+                        "Infinity runtime rules artifact is not packaged");
+                return;
+            }
+            SchematicBindingRegistry registry =
+                    new InfinityLiveBindingFactory().create(galaxy, ruleset);
+            setRulesContext(ruleset, registry);
+        } catch (Throwable failure) {
+            clearRulesContext(
+                    "Infinity runtime rules failed closed: "
+                    + failure.getMessage());
+        }
+    }
+
+    private void clearRulesContext(String status) {
+        activeRuleset = null;
+        activeRegistry = null;
+        activeProviderId = "(none)";
+        runtimeStatus = status == null ? "rules unavailable" : status;
+        lastBound = null;
+        lastScenario = null;
+        refreshAll();
     }
 
     public InfinityRuleset getActiveRuleset() { return activeRuleset; }
@@ -275,15 +330,16 @@ public final class SWGCraftingSimulatorTab extends JPanel {
                 ? "-" : galaxy.id());
         sb.append(")<br/>");
         sb.append("Rules provider: ");
-        sb.append(activeRegistry == null
-                ? "(none)" : activeRegistry.getServerId());
+        sb.append(activeProviderId);
         sb.append("&nbsp;&nbsp;Ruleset SHA: ");
         sb.append(activeRuleset == null
                 ? "(none)" : activeRuleset.getRulesetHash().substring(0, 16));
         sb.append("...&nbsp;&nbsp;Source commit: ");
         sb.append(activeRuleset == null
                 ? "(none)" : activeRuleset.getManifest().getCommit().substring(0, 12));
-        sb.append("...&nbsp;&nbsp;Coverage: ");
+        sb.append("...&nbsp;&nbsp;Runtime: ");
+        sb.append(runtimeStatus);
+        sb.append("&nbsp;&nbsp;Coverage: ");
         if (selectedSchematic == null || activeRegistry == null
                 || activeRuleset == null) {
             sb.append("(no schematic)");
