@@ -349,3 +349,51 @@ T5 commits:
 T6 commits:
 
 - (this commit) test(parity): add weapon vertical parity self-test (T6)
+
+
+## Post-operator greenfield hardening checkpoint
+
+Operator review after `1a4336438de43dd3551a44afba61b41b56ef63a2`
+found production gaps that were not covered by the earlier terminal receipt.
+
+Greenfield/remediation commits added after that evidence include:
+
+- `d883721` — provider-neutral native resource snapshots; real SWGAide
+  CR/CD/DR/ER/FL/HR/MA/OQ/PE/SR/UT capture; real resource-class ancestry;
+  inventory quantity preservation.
+- `67db7a7` — effective weapon ruleset composer plus corrected source
+  `experimentalCombineType` / raw-weight normalization.
+- `138866f` — live runtime binding using real SWGAide schematic IDs rather
+  than test-only synthetic IDs.
+- `fbe80b3` — explicit per-slot X/Y/Z native resource candidate/selection
+  model and real resource combo boxes in the Crafting Simulator tab.
+- `96f0b78` — production UI execution now goes through
+  `InfinityCraftService.executeExact` rather than bypassing coverage via the
+  raw arithmetic engine.
+- `b49dab8` — dependency-free normalized ruleset JSON codec, source-free
+  runtime bootstrap, and developer ruleset exporter.
+- `47b2105` — native tab automatically loads the bundled Infinity ruleset and
+  builds real live bindings for server 154; missing/malformed artifact fails
+  closed.
+- `2f316c2` — Today's Alert tint index corrected from child tab 2 to child
+  tab 3 after Crafting Simulator insertion.
+
+### Evidence status after these commits
+
+The prior JDK8/Maven terminal PASS at `1a43364...` remains valid historical
+evidence for that exact SHA only.
+
+For the current post-hardening head:
+
+- compile: **REVALIDATION_REQUIRED**
+- foundation suite: **REVALIDATION_REQUIRED**
+- bundled runtime artifact: **NOT YET GENERATED/COMMITTED**
+- bundled runtime artifact load smoke: **PENDING**
+- live SWGAide server-154 binding smoke: **PENDING**
+- native X/Y/Z selector runtime smoke: **PENDING**
+- SWGTestBench byte-identity: must be rechecked at current head
+- CI: remains `INFRASTRUCTURE_BLOCKED` unless separately diagnosed
+
+Do not merge or restore a final PASS receipt until the exact current head has
+been terminal-validated and the packaged runtime artifact has been generated
+from the pinned Infinity checkout.

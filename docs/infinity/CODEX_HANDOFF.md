@@ -210,3 +210,45 @@ Every tranche must report:
 - unresolved UNKNOWNs;
 - rollback;
 - smallest next action.
+
+
+## Immediate continuation after operator greenfield hardening
+
+The branch has moved beyond the prior terminal-certified SHA
+`1a4336438de43dd3551a44afba61b41b56ef63a2`.
+
+Before any module expansion, perform these actions on the exact current head:
+
+1. Resolve `git rev-parse HEAD` and verify remote == local.
+2. Run `mvn -B -Dstyle.color=never test-compile`.
+3. Run `swg.infinity.FoundationSelfTestSuite`.
+4. Fix any compile/self-test regression narrowly; do not weaken fail-closed
+   contracts.
+5. Generate the packaged Infinity weapon ruleset using
+   `InfinityWeaponRulesetExportMain` from the pinned
+   `swginfinity/public@6b6ac372...` checkout. Admit only the four currently
+   parity-certified schematic IDs:
+   - `pistol_blaster_dl44`
+   - `carbine_geo`
+   - `pistol_blaster_scout_trooper`
+   - `rifle_berserker`
+6. Install the generated artifact at:
+   `src/main/resources/swg/crafting/simulator/server/infinity/weapon-ruleset.json`.
+7. Run `InfinityBundledRulesetSelfTest`.
+8. Re-run the full foundation suite.
+9. Run the facade runtime test through `runExact`; do not use the raw
+   `InfinityCraftEngine` UI path.
+10. Launch SWGAide and verify:
+    - Infinity server 154 automatically loads provider `swg-infinity`;
+    - live bindings use actual SWGAide schematic IDs;
+    - an admitted weapon shows EXACT coverage;
+    - a non-admitted weapon fails closed / is not presented as Exact;
+    - each raw-resource slot has a user-selectable candidate combo;
+    - changing X/Y/Z resources changes the craft result through the same engine;
+    - inventory quantity is visible/preserved for planning;
+    - unsupported servers remain resource-only;
+    - Today's Alert tint still targets tab index 3;
+    - `SWGTestBench.java` remains byte-identical to baseline.
+
+Read `docs/infinity/RUNTIME_ARTIFACT.md` for the exact artifact-generation
+contract.
