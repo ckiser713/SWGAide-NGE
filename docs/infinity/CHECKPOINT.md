@@ -307,3 +307,33 @@ T4 commits:
 T5 commits:
 
 - (this commit) feat(integration): add multi-signal structural binding classifier
+
+### T6 weapon vertical parity (2026-09-20)
+
+- `WeaponVerticalParitySelfTest` in `swg.infinity.fixtures.*` aggregates
+  every accepted weapon seed fixture and compares the
+  {@link swg.infinity.extract.Extractor Extractor}-emitted
+  {@code SchematicDefinition} against the seed's structural and
+  numeric truth:
+    - slot count
+    - target template
+    - assembly + experimenting skills
+    - per-slot kind (mapped from {@code ingredientSlotType} integer
+      code to {@code SlotKind} enum)
+    - per-slot quantity
+    - per-slot accepted resource type
+    - per-slot contribution within project tolerance (percentages
+      1e-4, weighted scores 1e-6, attributes 1e-2 — never widened)
+- The four source-pinned weapon seeds (`pistol_blaster_dl44`,
+  `pistol_blaster_scout_trooper`, `carbine_geo`, `rifle_berserker`)
+  all reproduce from the extractor with full structural parity:
+  `WeaponVerticalParitySelfTest PASS (4/4)`.
+- `docs/infinity/ACCEPTANCE_MATRIX.md`: rows for `weapon final
+  processor` and `weapon vertical parity` flipped from
+  `implemented in Infinity module` to `EXACT vertical complete`,
+  keyed to the new self-test as evidence.
+- Foundation suite now runs 24 self-tests, all PASS.
+
+T6 commits:
+
+- (this commit) test(parity): add weapon vertical parity self-test (T6)

@@ -28,7 +28,8 @@
 | generic component combine path | implemented | fixture per combine type |
 | recursive crafted component conversion | implemented | nested craft fixture |
 | generic compare/explain/planning | implemented | compile/self-tests |
-| weapon final processor | implemented in Infinity module | complete real weapon fixture |
+| weapon final processor | EXACT vertical complete | WeaponVerticalParitySelfTest 4/4 |
+| weapon vertical parity | EXACT vertical complete | source-pinned seeds + extractor |
 | RNG probability model | not implemented | System::random semantics + parity |
 | Genetic Laboratory | not implemented | source/fixture pass |
 | Droid Laboratory | not implemented | source/fixture pass |
