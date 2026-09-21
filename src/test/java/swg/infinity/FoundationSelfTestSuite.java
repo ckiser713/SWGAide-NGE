@@ -7,6 +7,7 @@ import swg.crafting.simulator.ServerSimulationContextSelfTest;
 import swg.crafting.simulator.components.RecursiveCraftCycleSelfTest;
 import swg.crafting.simulator.components.ExactComponentInputSelfTest;
 import swg.crafting.simulator.rules.ServerRulesRegistrySelfTest;
+import swg.crafting.simulator.rules.UnsupportedServerBehaviorSelfTest;
 import swg.infinity.analysis.CraftComparatorSelfTest;
 import swg.infinity.analysis.CraftExplainerSelfTest;
 import swg.infinity.component.ComponentCombinerSelfTest;
@@ -33,6 +34,7 @@ import swg.infinity.rules.RulesetIntegritySelfTest;
 import swg.gui.schematics.craftsim.SWGCraftingSimulatorTabHeadlessSmoke;
 import swg.gui.schematics.craftsim.SimEngineFacadeRuntimeSelfTest;
 import swg.crafting.simulator.persistence.CraftsimPersistenceSelfTest;
+import swg.crafting.simulator.persistence.CraftsimV2SchemaRevalidationSelfTest;
 
 /**
  * Dependency-free foundation suite for repositories that have not yet admitted
@@ -49,6 +51,7 @@ public final class FoundationSelfTestSuite {
         RecursiveCraftCycleSelfTest.main(args);
         ExactComponentInputSelfTest.main(args);
         ServerRulesRegistrySelfTest.main(args);
+        UnsupportedServerBehaviorSelfTest.main(args);
         ServerSimulationContextSelfTest.main(args);
         ResourceLaboratorySelfTest.main(args);
         ComponentCombinerSelfTest.main(args);
@@ -76,6 +79,7 @@ public final class FoundationSelfTestSuite {
         SWGCraftingSimulatorTabHeadlessSmoke.main(args);
         SimEngineFacadeRuntimeSelfTest.main(args);
         CraftsimPersistenceSelfTest.main(args);
+        CraftsimV2SchemaRevalidationSelfTest.main(args);
         System.out.println("FoundationSelfTestSuite PASS");
     }
 }

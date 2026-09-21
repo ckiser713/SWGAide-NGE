@@ -322,6 +322,14 @@ public final class SWGCraftingSimulatorTab extends JPanel {
         refreshBanner();
     }
 
+    private void refreshAll() {
+        refreshBanner();
+        if (selectedSchematic != null) {
+            refreshIngredientGrid();
+            refreshExperimentBox();
+        }
+    }
+
     private void refreshBanner() {
         SWGCGalaxy galaxy = SWGFrame.getSelectedGalaxy();
         StringBuilder sb = new StringBuilder();
