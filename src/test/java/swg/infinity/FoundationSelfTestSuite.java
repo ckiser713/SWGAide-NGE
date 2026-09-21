@@ -11,6 +11,7 @@ import swg.infinity.analysis.CraftComparatorSelfTest;
 import swg.infinity.analysis.CraftExplainerSelfTest;
 import swg.infinity.component.ComponentCombinerSelfTest;
 import swg.infinity.component.CraftedComponentFactorySelfTest;
+import swg.infinity.component.RecursiveComponentCraftServiceSelfTest;
 import swg.infinity.crafter.CraftingSkillMathSelfTest;
 import swg.infinity.engine.InfinityCraftEngineSelfTest;
 import swg.infinity.engine.InfinityCraftServiceSelfTest;
@@ -52,6 +53,7 @@ public final class FoundationSelfTestSuite {
         ResourceLaboratorySelfTest.main(args);
         ComponentCombinerSelfTest.main(args);
         CraftedComponentFactorySelfTest.main(args);
+        RecursiveComponentCraftServiceSelfTest.main(args);
         SchematicBindingRegistrySelfTest.main(args);
         BindingClassificationSelfTest.main(args);
         LiveBindingSignatureSelfTest.main(args);
