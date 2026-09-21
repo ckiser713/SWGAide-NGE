@@ -111,4 +111,25 @@ public final class ResourceSnapshot {
         }
         return value;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(name);
+        sb.append(" [").append(source.name()).append("]");
+        if (availableQuantity >= 0L) {
+            sb.append(" qty=").append(availableQuantity);
+        }
+        if (!stats.isEmpty()) {
+            sb.append(" {");
+            boolean first = true;
+            for (Map.Entry<String, Integer> entry : stats.entrySet()) {
+                if (entry.getValue().intValue() == 0) continue;
+                if (!first) sb.append(' ');
+                first = false;
+                sb.append(entry.getKey()).append('=').append(entry.getValue());
+            }
+            sb.append('}');
+        }
+        return sb.toString();
+    }
 }

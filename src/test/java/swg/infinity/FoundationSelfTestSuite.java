@@ -2,6 +2,7 @@ package swg.infinity;
 
 import swg.crafting.simulator.GenericCoreBoundarySelfTest;
 import swg.crafting.simulator.resources.ResourceSnapshotSelfTest;
+import swg.crafting.simulator.resources.ResourceCandidateMatcherSelfTest;
 import swg.crafting.simulator.ServerSimulationContextSelfTest;
 import swg.crafting.simulator.components.RecursiveCraftCycleSelfTest;
 import swg.crafting.simulator.rules.ServerRulesRegistrySelfTest;
@@ -41,6 +42,7 @@ public final class FoundationSelfTestSuite {
     public static void main(String[] args) throws Exception {
         GenericCoreBoundarySelfTest.main(args);
         ResourceSnapshotSelfTest.main(args);
+        ResourceCandidateMatcherSelfTest.main(args);
         RecursiveCraftCycleSelfTest.main(args);
         ServerRulesRegistrySelfTest.main(args);
         ServerSimulationContextSelfTest.main(args);

@@ -153,6 +153,67 @@ public final class NativeResourceAdapter {
                 Collections.unmodifiableList(warnings));
     }
 
+    /**
+     * Returns provider-neutral candidate lists for every raw-resource slot.
+     */
+    public static List<swg.crafting.simulator.resources.ResourceCandidateSet>
+            candidates(
+                    SchematicDefinition definition,
+                    List<ResourceSnapshot> available) {
+        return new swg.crafting.simulator.resources.ResourceCandidateMatcher()
+                .match(
+                    swg.crafting.simulator.server.infinity
+                        .InfinityResourceRequirements.from(definition),
+                    available == null
+                        ? Collections.<ResourceSnapshot>emptyList()
+                        : available);
+    }
+
+    /**
+     * Converts explicit per-slot user selections into Infinity engine inputs.
+     * Missing selections are reported as warnings rather than silently
+     * auto-selecting another resource.
+     */
+    public static Resolved resolveSelections(
+            SchematicDefinition definition,
+            java.util.Map<Integer, ResourceSnapshot> selections) {
+        if (definition == null) throw new NullPointerException("definition");
+        if (selections == null) throw new NullPointerException("selections");
+
+        List<ResourceSlotAssignment> assignments =
+                new ArrayList<ResourceSlotAssignment>();
+        List<String> warnings = new ArrayList<String>();
+
+        for (IngredientSlotDefinition slot : definition.getSlots()) {
+            if (slot.getKind()
+                    != swg.infinity.contracts.SlotKind.RESOURCE) {
+                continue;
+            }
+
+            ResourceSnapshot selected =
+                    selections.get(Integer.valueOf(slot.getIndex()));
+            if (selected == null) {
+                warnings.add("no resource selected for slot "
+                        + slot.getIndex() + " (accepted="
+                        + slot.getAcceptedType() + ")");
+                continue;
+            }
+            if (!selected.matchesAcceptedType(slot.getAcceptedType())) {
+                warnings.add("selected resource " + selected.getName()
+                        + " is not compatible with slot " + slot.getIndex()
+                        + " (accepted=" + slot.getAcceptedType() + ")");
+                continue;
+            }
+
+            assignments.add(new ResourceSlotAssignment(
+                    slot.getIndex(), INFINITY.map(selected)));
+        }
+
+        return new Resolved(
+                Collections.unmodifiableList(assignments),
+                Collections.unmodifiableList(warnings));
+    }
+
     public static int swgAideIdFor(SWGSchematic schematic) {
         if (schematic == null) return -1;
         try {

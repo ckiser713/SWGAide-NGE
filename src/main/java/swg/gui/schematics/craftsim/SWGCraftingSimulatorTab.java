@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -82,6 +84,11 @@ public final class SWGCraftingSimulatorTab extends JPanel {
     private final JList<String> schematicList = new JList<String>(
             schematicListModel);
     private final JPanel ingredientPanel = new JPanel();
+    private final Map<Integer, JComboBox<
+            swg.crafting.simulator.resources.ResourceSnapshot>>
+            resourceSelectors =
+                    new LinkedHashMap<Integer, JComboBox<
+                            swg.crafting.simulator.resources.ResourceSnapshot>>();
     private final JTextField exoticComponentField = new JTextField(20);
     private final JSpinner recursionDepthSpinner = new JSpinner(
             new SpinnerNumberModel(1, 1, 8, 1));
@@ -160,6 +167,7 @@ public final class SWGCraftingSimulatorTab extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 refreshBanner();
+                refreshIngredientGrid();
             }
         });
 
@@ -307,22 +315,100 @@ public final class SWGCraftingSimulatorTab extends JPanel {
 
     private void refreshIngredientGrid() {
         ingredientPanel.removeAll();
+        resourceSelectors.clear();
+
         if (selectedSchematic == null) {
             ingredientPanel.add(new JLabel(
                     "No schematic selected. Pick one above."));
-        } else {
-            int i = 0;
-            for (Object slot : selectedSchematic.getResourceSlots()) {
-                ingredientPanel.add(new JLabel(
-                        "Slot " + i++ + ": " + describe(slot)));
-            }
+            finishIngredientRefresh();
+            return;
         }
-        ingredientPanel.revalidate();
-        ingredientPanel.repaint();
+
+        if (activeRegistry == null || activeRuleset == null) {
+            ingredientPanel.add(new JLabel(
+                    "No verified server rules context loaded."));
+            finishIngredientRefresh();
+            return;
+        }
+
+        SimEngineFacade.BoundSchematic bound =
+                SimEngineFacade.resolve(
+                        selectedSchematic, activeRegistry, activeRuleset);
+        lastBound = bound;
+        if (!bound.runnable || bound.definition == null) {
+            ingredientPanel.add(new JLabel(
+                    "Schematic binding is not runnable."));
+            finishIngredientRefresh();
+            return;
+        }
+
+        SWGCGalaxy galaxy = SWGFrame.getSelectedGalaxy();
+        List<swg.crafting.simulator.resources.ResourceSnapshot> available =
+                galaxy == null
+                        ? Collections
+                            .<swg.crafting.simulator.resources.ResourceSnapshot>
+                                emptyList()
+                        : NativeResourceAdapter.loadScope(
+                                currentScope(), galaxy);
+
+        List<swg.crafting.simulator.resources.ResourceCandidateSet> candidateSets =
+                NativeResourceAdapter.candidates(bound.definition, available);
+        Map<Integer, swg.crafting.simulator.resources.ResourceCandidateSet>
+                bySlot =
+                    new LinkedHashMap<Integer,
+                        swg.crafting.simulator.resources.ResourceCandidateSet>();
+        for (swg.crafting.simulator.resources.ResourceCandidateSet set
+                : candidateSets) {
+            bySlot.put(Integer.valueOf(set.getRequirement().getSlotIndex()), set);
+        }
+
+        for (swg.infinity.contracts.IngredientSlotDefinition slot
+                : bound.definition.getSlots()) {
+            JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            row.add(new JLabel(
+                    "Slot " + slot.getIndex()
+                    + " " + slot.getTitle()
+                    + " x" + slot.getQuantity()
+                    + " [" + slot.getAcceptedType() + "]"));
+
+            if (slot.getKind()
+                    == swg.infinity.contracts.SlotKind.RESOURCE) {
+                swg.crafting.simulator.resources.ResourceCandidateSet set =
+                        bySlot.get(Integer.valueOf(slot.getIndex()));
+                List<swg.crafting.simulator.resources.ResourceSnapshot> choices =
+                        set == null
+                                ? Collections
+                                    .<swg.crafting.simulator.resources.ResourceSnapshot>
+                                        emptyList()
+                                : set.getCandidates();
+
+                JComboBox<swg.crafting.simulator.resources.ResourceSnapshot> box =
+                        new JComboBox<
+                            swg.crafting.simulator.resources.ResourceSnapshot>(
+                                choices.toArray(
+                                    new swg.crafting.simulator.resources
+                                        .ResourceSnapshot[choices.size()]));
+                box.setPrototypeDisplayValue(
+                        choices.isEmpty() ? null : choices.get(0));
+                resourceSelectors.put(
+                        Integer.valueOf(slot.getIndex()), box);
+                row.add(box);
+                if (choices.isEmpty()) {
+                    row.add(new JLabel("No compatible resource"));
+                }
+            } else {
+                row.add(new JLabel(
+                        "Component slot — configure below / exact component input"));
+            }
+            ingredientPanel.add(row);
+        }
+
+        finishIngredientRefresh();
     }
 
-    private String describe(Object slot) {
-        return String.valueOf(slot);
+    private void finishIngredientRefresh() {
+        ingredientPanel.revalidate();
+        ingredientPanel.repaint();
     }
 
     private void refreshExperimentBox() {
@@ -409,17 +495,32 @@ public final class SWGCraftingSimulatorTab extends JPanel {
      */
     private List<swg.infinity.engine.ResourceSlotAssignment>
             gatherResources(swg.infinity.contracts.SchematicDefinition def) {
-        SWGCGalaxy galaxy = SWGFrame.getSelectedGalaxy();
-        if (galaxy == null) return Collections.emptyList();
-        NativeResourceAdapter.Scope scope = currentScope();
-        List<swg.crafting.simulator.resources.ResourceSnapshot> candidates =
-                NativeResourceAdapter.loadScope(scope, galaxy);
+        Map<Integer, swg.crafting.simulator.resources.ResourceSnapshot>
+                selections =
+                    new LinkedHashMap<Integer,
+                        swg.crafting.simulator.resources.ResourceSnapshot>();
+
+        for (Map.Entry<Integer, JComboBox<
+                swg.crafting.simulator.resources.ResourceSnapshot>> entry
+                : resourceSelectors.entrySet()) {
+            Object selected = entry.getValue().getSelectedItem();
+            if (selected instanceof
+                    swg.crafting.simulator.resources.ResourceSnapshot) {
+                selections.put(
+                        entry.getKey(),
+                        (swg.crafting.simulator.resources.ResourceSnapshot)
+                            selected);
+            }
+        }
+
         NativeResourceAdapter.Resolved resolved =
-                NativeResourceAdapter.resolve(def, candidates);
+                NativeResourceAdapter.resolveSelections(def, selections);
         if (!resolved.warnings.isEmpty()) {
             StringBuilder warn = new StringBuilder(
-                    "Resource scope warnings:\n");
-            for (String w : resolved.warnings) warn.append("  ").append(w).append('\n');
+                    "Resource selection warnings:\n");
+            for (String w : resolved.warnings) {
+                warn.append("  ").append(w).append('\n');
+            }
             resultArea.setText(warn.toString());
         }
         return resolved.resources;
