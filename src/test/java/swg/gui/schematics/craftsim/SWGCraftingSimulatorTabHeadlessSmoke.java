@@ -71,7 +71,14 @@ public final class SWGCraftingSimulatorTabHeadlessSmoke {
         assertContains(source, "setMnemonicAt(3, KeyEvent.VK_T)");
         assertContains(source, "setMnemonicAt(4, KeyEvent.VK_U)");
 
-        // 5) SWGTestBench.java byte-identical invariant
+        // 5) Today's Alert moved from child index 2 to 3 when Crafting
+        // Simulator was inserted; its tint must follow the new index.
+        assertContains(source,
+                "setForegroundAt(3, UIManager.getColor(\"SWG.colorAlert\"))");
+        assertContains(source,
+                "setBackgroundAt(3, UIManager.getColor(\"SWG.colorAlert\"))");
+
+        // 6) SWGTestBench.java byte-identical invariant
         File bench = new File("src/main/java/swg/gui/schematics/SWGTestBench.java");
         if (!bench.isFile()) {
             throw new AssertionError("SWGTestBench.java missing");

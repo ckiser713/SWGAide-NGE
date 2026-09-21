@@ -548,19 +548,19 @@ public final class SWGSchematicTab extends JTabbedPane {
             	MetalTheme theme = MetalLookAndFeel.getCurrentTheme();
             	if(todaysAlert.todaysTinted()) {
             		if(theme.getName().contains("Dark")) {
-            			setForegroundAt(2, UIManager.getColor("SWG.colorAlert"));
+            			setForegroundAt(3, UIManager.getColor("SWG.colorAlert"));
             			SWGAide.frame().getTabPane().setForegroundAt(3, UIManager.getColor("SWG.colorAlert"));
             		} else {
-            			setBackgroundAt(2, UIManager.getColor("SWG.colorAlert"));
+            			setBackgroundAt(3, UIManager.getColor("SWG.colorAlert"));
             			SWGAide.frame().getTabPane().setBackgroundAt(3, UIManager.getColor("SWG.colorAlert"));
             		}
             	} else {
             		if(theme.getName().contains("Dark")) {
                     	Color fg = UIManager.getColor("TabbedPane.foreground");
-                    	setForegroundAt(2, fg);
+                    	setForegroundAt(3, fg);
                     	SWGAide.frame().getTabPane().setForegroundAt(3, fg);
                     } else {
-                    	setBackgroundAt(2, null);
+                    	setBackgroundAt(3, null);
                 		SWGAide.frame().getTabPane().setBackgroundAt(3, null);
                     }
             	}
