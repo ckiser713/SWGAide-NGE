@@ -1,9 +1,10 @@
 # Codex Continuation Handoff
 
-## Controlling objective
+## Controlling architecture
 
-Continue SWG Infinity Crafting Laboratory development on the existing draft PR
-without weakening the evidence/authority model.
+**Generic crafting engine + server rules modules**
+
+Do not continue this project as an Infinity-only UI or a separate application.
 
 Repository:
 
@@ -11,7 +12,7 @@ Repository:
 
 Pull request:
 
-`#1 — feat: add SWG Infinity crafting laboratory foundation`
+`#1`
 
 Branch:
 
@@ -21,16 +22,97 @@ Base:
 
 `master@7f520ee508221cce3ac3e8871919e74de9fcb0c2`
 
-SWG Infinity authority:
+Infinity first-module authority:
 
 `swginfinity/public@6b6ac3726aaa3c293fca83911850d3a02e2adb4f`
 
-**Resolve the current PR head with Git before doing any work. Do not trust a
-copied SHA in prose if the branch has moved.**
+Resolve current PR HEAD with Git before work.
+
+## Product/UI contract
+
+The final UI is a **new native child tab inside existing `SWGSchematicTab`**.
+
+Tab label:
+
+`Crafting Simulator`
+
+Place after `The Laboratory`.
+
+Do not create:
+
+- standalone app;
+- second top-level SWGAide application tab;
+- Infinity-only primary dialog.
+
+Extend existing selected-schematic synchronization to the new tab.
+
+## Resource contract
+
+Use the currently selected SWGAide server.
+
+Native resource sources:
+
+```text
+CURRENT:
+SWGResourceManager.getSpawning(galaxy)
+
+LOADED_RECENT:
+SWGResourceManager.getSet(galaxy)
+
+INVENTORY:
+SWGResController.inventory(galaxy)
+```
+
+No second resource DB/feed.
+
+Do not enumerate SWGAide's private cache by reflection or encapsulation bypass.
+
+## Rules module contract
+
+Generic provider interfaces live under:
+
+`swg.crafting.simulator.*`
+
+Infinity first provider:
+
+`swg.crafting.simulator.server.infinity.InfinityServerRulesProvider`
+
+Resolution precedence:
+
+1. EXACT_SERVER
+2. VERIFIED_FAMILY
+3. no provider
+
+Family metadata (`precu`, `nge`) alone is not evidence.
+
+Infinity provider must only claim SWGAide server 154.
+
+A future Core3/PRE-CU base provider requires separate source/fixture acceptance before it
+may return VERIFIED_FAMILY.
+
+Unsupported servers remain usable in legacy SWGAide and may show resources in the new
+tab, but final-item simulation must be unavailable/resource-only.
+
+## Transitional package rule
+
+Existing `swg.infinity.*` contains the first source-backed implementation.
+
+Do not perform a blind package-wide rename before terminal compilation evidence.
+
+After G0/G1/G2 pass, migrate truly reusable services toward
+`swg.crafting.simulator.*`, while keeping Infinity-specific:
+
+- extractor;
+- source provenance;
+- formulas/quirks not proven universal;
+- server-specific processors;
+- loot;
+- bindings;
+- fixtures;
+
+inside the Infinity module.
 
 ## First terminal actions
-
-Run and preserve exact output:
 
 ```text
 git status --short
@@ -40,29 +122,20 @@ java -version
 mvn -version
 ```
 
-### Baseline evidence
+Build untouched baseline first:
 
-Use a separate clean worktree or checkout to test:
+```text
+git checkout/worktree 7f520ee508221cce3ac3e8871919e74de9fcb0c2
+mvn -B -Dstyle.color=never test-compile
+```
 
-`7f520ee508221cce3ac3e8871919e74de9fcb0c2`
-
-Run:
+Then exact PR head:
 
 ```text
 mvn -B -Dstyle.color=never test-compile
 ```
 
-Record the result before attributing any build issue to the feature branch.
-
-### Candidate evidence
-
-On the exact PR head:
-
-```text
-mvn -B -Dstyle.color=never test-compile
-```
-
-If compilation succeeds:
+If successful:
 
 Unix-like:
 
@@ -76,111 +149,64 @@ Windows:
 java -ea -cp target/test-classes;target/classes swg.infinity.FoundationSelfTestSuite
 ```
 
-Capture the full output.
+Capture all output.
 
 ## CI receipt
 
-GitHub-created runs `35544275090` and `35544275575` for candidate
-`578a62634598e1a7621733b11a3d9a946f4c0131` both failed before any workflow
-step was recorded. Treat GitHub-hosted CI as INFRASTRUCTURE_BLOCKED, not as
-compile failure. Automatic triggers are disabled until diagnosed.
+Prior runs `35544275090` and `35544275575` failed before any recorded workflow
+step. Classify CI as INFRASTRUCTURE_BLOCKED, not compilation failure.
 
-## Do not do these while fixing build issues
+## Read before implementation
+
+```text
+docs/infinity/ARCHITECTURE.md
+docs/infinity/SERVER_MODULES.md
+docs/infinity/RESOURCE_INTEGRATION.md
+docs/infinity/UI_INTEGRATION.md
+docs/infinity/TASK_GRAPH.yaml
+docs/infinity/SOURCE_OF_TRUTH.md
+docs/infinity/ACCEPTANCE_MATRIX.md
+docs/infinity/GOLDEN_FIXTURE_PLAN.md
+docs/infinity/UNKNOWN_REGISTER.md
+docs/infinity/CHECKPOINT.md
+```
+
+## Do not do while remediating
 
 - do not weaken fail-closed validation;
-- do not remove source quirks because they look unintuitive;
-- do not change legacy `SWGTestBench`;
+- do not make PRE-CU == Infinity/Core3;
+- do not create a duplicate resource store;
+- do not modify legacy `SWGTestBench`;
 - do not modify `SWGAide.DAT`;
 - do not change Java version;
 - do not add dependencies;
 - do not copy Infinity AGPL implementation source;
-- do not convert UNKNOWN into PASS.
+- do not turn UNKNOWN into PASS.
 
-If one of those becomes necessary, stop and report the evidence.
+## Post-validation order
 
-## Existing implementation areas
+1. compile remediation only;
+2. foundation self-tests;
+3. generic-core/server-module boundary completion;
+4. real Infinity golden fixtures;
+5. Infinity extractor;
+6. server-154 bindings;
+7. complete Infinity weapon vertical;
+8. native Crafting Simulator tab;
+9. versioned simulator persistence;
+10. additional Infinity verticals / independently verified server modules.
 
-Review these packages before extending:
+## Required report
 
-```text
-swg.infinity.contracts
-swg.infinity.engine
-swg.infinity.component
-swg.infinity.integration
-swg.infinity.processor
-swg.infinity.analysis
-swg.infinity.planning
-swg.infinity.rules
-swg.infinity.crafter
-swg.infinity.loot
-swg.infinity.extract
-```
+Every tranche must report:
 
-Key handoff documents:
-
-```text
-docs/infinity/SOURCE_OF_TRUTH.md
-docs/infinity/ARCHITECTURE.md
-docs/infinity/ACCEPTANCE_MATRIX.md
-docs/infinity/GOLDEN_FIXTURE_PLAN.md
-docs/infinity/TASK_GRAPH.yaml
-docs/infinity/UNKNOWN_REGISTER.md
-docs/infinity/CI.md
-docs/infinity/CHECKPOINT.md
-```
-
-Machine-readable contracts:
-
-```text
-docs/infinity/ruleset.schema.json
-docs/infinity/bindings.schema.json
-docs/infinity/scenario.schema.json
-```
-
-## Next implementation order after compile/self-tests
-
-### 1. Static/code review remediation
-
-Resolve compile failures narrowly. Add tests for every remediation.
-
-### 2. Real golden fixtures
-
-Implement the weapon corpus in `GOLDEN_FIXTURE_PLAN.md`. Synthetic smoke tests
-do not justify Exact support.
-
-### 3. Source extractor
-
-Build the sandboxed inheritance-resolving extractor only after normalized
-contracts are compile-verified. Regex-only Lua scraping is prohibited.
-
-### 4. Schematic bindings
-
-Generate VERIFIED/AMBIGUOUS/MISSING bindings for SWGAide server 154. Ambiguous
-bindings do not run as Exact.
-
-### 5. Complete weapon vertical
-
-Prove resource → crafted component → exact exotic component → final weapon.
-
-### 6. Additive Swing workbench
-
-Only after the engine/golden path is evidence-complete. Keep legacy Test Bench
-available and unchanged.
-
-## Required completion report
-
-For every Codex tranche return:
-
-- objective and scope;
+- objective/scope;
 - current branch/head SHA;
 - changed files;
-- commits/SHAs;
-- commands executed;
-- tests/build results with output location;
-- golden fixtures/evidence;
+- commit SHAs;
+- commands/results;
+- evidence locations;
 - coverage changes;
-- unresolved UNKNOWNs/blockers;
+- unresolved UNKNOWNs;
 - rollback;
 - smallest next action.
-
-A clean narrative is not acceptance evidence.
