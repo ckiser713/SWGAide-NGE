@@ -64,7 +64,9 @@ See `GENERICIZATION_MIGRATION.md`.
 - native resource API research: PASS
 - PR isolation/additivity: requires final re-audit after latest commits
 - compile: **PASS** (terminal evidence 2026-09-20)
-- self-tests: **PASS** (terminal evidence 2026-09-20)
+- self-tests: **PASS** (terminal evidence 2026-09-20, expanded to 17 with T2)
+- generic core boundary: **PASS** (T2, 2026-09-20)
+- recursive crafting cycle detection: **PASS** (T2, 2026-09-20)
 - GUI smoke: UNKNOWN
 - CI: INFRASTRUCTURE_BLOCKED before job steps
 - real Infinity golden parity: NOT YET ADMITTED
@@ -137,3 +139,43 @@ No narrative claim upgrades UNKNOWN.
   ExtractionReportSelfTest PASS
   FoundationSelfTestSuite PASS
   ```
+
+### T2 generic core boundary + cycle detection (2026-09-20)
+
+Phases 1–7 of T2 moved 22 files from `swg.infinity.*` to
+`swg.crafting.simulator.*`:
+
+- Phase 1: contracts → `swg.crafting.simulator.contracts.*` (already pushed)
+- Phase 2: scenarios → `swg.crafting.simulator.scenario.*`
+- Phase 3: component DTOs → `swg.crafting.simulator.components.*`
+- Phase 4: analysis services → `swg.crafting.simulator.compare.*` and
+  `swg.crafting.simulator.explain.*`
+- Phase 5: planning → `swg.crafting.simulator.planning.*`
+- Phase 6: crafter math → `swg.crafting.simulator.crafter.CraftingSkillMath`
+- Phase 7: ruleset → originally moved to `swg.crafting.simulator.ruleset.*`,
+  then reverted because the catalog/admission/validator are structurally
+  Infinity-specific (keyed by Infinity source commit, validated as
+  `InfinityRuleset`). Now in `swg.infinity.ruleset.*` and
+  `swg.infinity.contracts.RulesetValidator`.
+
+Two new guards close out T2:
+
+- `RecursiveCraftCycleDetector` + `RecursiveCraftCycleException` in
+  `swg.crafting.simulator.components.*`. Generic DAG walk utility that
+  raises the typed exception on any in-stack revisit. Default depth bound
+  64 is defense in depth; the cycle check is the authoritative gate.
+- `GenericCoreBoundarySelfTest` in `swg.crafting.simulator.*`. Asserts
+  the generic core does not import Infinity behaviour classes. Pure-DTO
+  imports from `swg.infinity.contracts.*` remain permitted because
+  Infinity-specific DTOs are still housed in the Infinity module per
+  `GENERICIZATION_MIGRATION.md`.
+
+T2 commits pushed to `origin/feature/infinity-crafting-lab-foundation`:
+
+- `b77c6a7` refactor(simulator): move component DTOs to swg.crafting.simulator.components
+- `61a6ecd` refactor(simulator): move engine scenarios to swg.crafting.simulator.scenario
+- `a9dda03` refactor(simulator): move analysis services to compare/ and explain/
+- `57220aa` refactor(simulator): move planning, crafter, and ruleset to swg.crafting.simulator
+- `04b5134` feat(simulator): add cycle detection and boundary self-test
+
+Foundation suite now runs 17 self-tests, all PASS. `mvn test-compile` exit 0.
