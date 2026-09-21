@@ -15,6 +15,8 @@ import swg.infinity.engine.ResourceLaboratorySelfTest;
 import swg.infinity.extract.ExtractionReportSelfTest;
 import swg.infinity.extract.ExtractorSelfTest;
 import swg.infinity.fixtures.SeedFixtureParseSelfTest;
+import swg.infinity.integration.BindingClassificationSelfTest;
+import swg.infinity.integration.BindingsSeedWriterSelfTest;
 import swg.infinity.integration.SchematicBindingRegistrySelfTest;
 import swg.infinity.planning.MaterialPlannerSelfTest;
 import swg.infinity.rules.RulesetCatalogSelfTest;
@@ -39,6 +41,8 @@ public final class FoundationSelfTestSuite {
         ComponentCombinerSelfTest.main(args);
         CraftedComponentFactorySelfTest.main(args);
         SchematicBindingRegistrySelfTest.main(args);
+        BindingClassificationSelfTest.main(args);
+        BindingsSeedWriterSelfTest.main(args);
         InfinityCraftEngineSelfTest.main(args);
         InfinityCraftServiceSelfTest.main(args);
         CraftComparatorSelfTest.main(args);

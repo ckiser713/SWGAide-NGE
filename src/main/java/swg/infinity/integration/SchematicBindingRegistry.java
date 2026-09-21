@@ -42,6 +42,14 @@ public final class SchematicBindingRegistry {
         return bindings.get(Integer.valueOf(swgAideSchematicId));
     }
 
+    /**
+     * Returns an immutable snapshot of all bindings in insertion order.
+     * Used by the binding writer and by diagnostics.
+     */
+    public java.util.List<SchematicBinding> snapshot() {
+        return new java.util.ArrayList<SchematicBinding>(bindings.values());
+    }
+
     public SchematicDefinition resolve(
             SWGSchematic schematic,
             InfinityRuleset ruleset) {

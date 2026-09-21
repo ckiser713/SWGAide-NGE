@@ -271,3 +271,39 @@ T4 commits:
 - `a6efb86` feat(gui): add native Crafting Simulator tab inside SWGSchematicTab (T7)
 - `8893ef9` feat(simulator): add isolated versioned craftsim scenario persistence (T8)
 - (this commit) feat(extract): add sandboxed Infinity source extractor (T4)
+
+### T5 multi-signal structural schematic bindings (2026-09-20)
+
+- `BindingFingerprint` lives in `swg.infinity.integration.*`. It computes
+  a SHA-256 hex over canonicalized structural signals: resource slot
+  count, sorted resource slot kinds, sorted experiment-group titles,
+  and normalized target template. Two structurally equivalent
+  schematics produce the same hash regardless of input ordering.
+  `alignsWith` returns true iff every primary signal matches; partial
+  alignment is rejected.
+- `SchematicCatalogEntry` is a provider-neutral SWGAide-side record
+  (id, name, slot count, slot kinds, group titles, target-template
+  hint) that decouples the binding pipeline from `SWGSchematic`.
+- `BindingBuilder.build(catalog, ruleset)` produces a `SchematicBinding`
+  per catalog entry: VERIFIED on exactly one fingerprint match,
+  AMBIGUOUS on multiple (evidence lists every candidate id), MISSING
+  on none.
+- `BindingOverride` requires non-empty `evidence` and
+  `operatorSignature`. Validation rejects otherwise.
+- `SchematicBindingRegistry` gained a `snapshot()` accessor.
+- `BindingWriter.write(registry, commit, out)` emits JSON conforming
+  to `docs/infinity/bindings.schema.json` with `serverId = 154`,
+  `schemaVersion = 1`, pinned `rulesetCommit`, and `admitted`
+  envelope flag.
+- `BindingClassificationSelfTest` exercises VERIFIED, AMBIGUOUS,
+  MISSING, MANUAL_OVERRIDE, the never-runnable AMBIGUOUS invariant,
+  and the writer's required-field output.
+- `BindingsSeedWriterSelfTest` runs the Extractor + 4 source-pinned
+  seeds + BindingBuilder end-to-end and writes
+  `target/bindings.server154.json`. All 4 seed weapons are admitted
+  as VERIFIED; slot counts cross-check between seed and extractor.
+- Foundation suite now runs 23 self-tests, all PASS.
+
+T5 commits:
+
+- (this commit) feat(integration): add multi-signal structural binding classifier
